@@ -1,0 +1,58 @@
+﻿@model SearchApi.Models.QueryDto
+@{
+    ViewBag.Title = "Try It out!";
+}
+<h1>Try It out!</h1>
+<p>Fill out the form below to see what will be sent to the serivce as well as to see the response</p>
+<div class="withBorder">
+    @using (Html.BeginForm())
+    {
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Latitude)
+        </div>
+        <div class="editor-field">
+            @Html.TextBoxFor(model => model.Latitude)
+        </div>
+        @Html.ValidationMessageFor(model => model.Latitude)
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Longitude)
+        </div>
+        <div class="editor-field">
+            @Html.TextBoxFor(model => model.Longitude)
+        </div>
+        @Html.ValidationMessageFor(model => model.Longitude)
+
+    <div class="editor-label optional">
+        @Html.LabelFor(model => model.Query)
+    </div>
+        <div class="editor-field ">
+            @Html.TextBoxFor(model => model.Query)
+        </div>
+        @Html.ValidationMessageFor(model => model.Query)
+
+        <div class="editor-label optional">
+            @Html.LabelFor(model => model.Radius)
+        </div>
+        <div class="editor-field">
+            @Html.TextBoxFor(model => model.Radius)
+        </div>
+        @Html.ValidationMessageFor(model => model.Radius)
+
+        <div style="clear: both"></div>
+        <div><a class="btn btn-primary btn-submit" href="#search" onclick="search">Search</a></div>
+    }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        function search() {
+
+            $.get("/api/search/", data, function (response) {
+                alert(response);
+            });
+        }
+    </script>
+}

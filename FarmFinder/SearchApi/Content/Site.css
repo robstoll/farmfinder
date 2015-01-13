@@ -15,3 +15,37 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.withBorder {
+    padding: 30px;
+    margin-bottom: 30px;
+    color: inherit;
+    border-radius: 6px;
+    border: 1px solid #eee;
+}
+.editor-label {
+    float: left;
+    clear: left;
+    width: 150px;
+    margin-top: 2px;
+}
+.editor-label,
+.editor-field {
+     margin-bottom: 4px;
+}
+.editor-field {
+    float: left;
+}
+.editor-field input {
+    border: 1px solid #AAA;
+    border-radius: 4px;
+    padding-left: 6px;
+    vertical-align: middle;
+    height: 25px;
+}
+.optional {
+    color: #AAA;
+}
+.btn-submit {
+    margin-top: 10px;
+}
