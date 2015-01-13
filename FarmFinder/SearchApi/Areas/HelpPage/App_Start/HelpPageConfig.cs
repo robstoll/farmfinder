@@ -15,6 +15,8 @@ using System.Web.Http;
 #if Handle_PageResultOfT
 using System.Web.Http.OData;
 #endif
+using SearchApi.Areas.HelpPage.Models;
+using SearchApi.Models;
 
 namespace SearchApi.Areas.HelpPage
 {
@@ -34,16 +36,20 @@ namespace SearchApi.Areas.HelpPage
         public static void Register(HttpConfiguration config)
         {
             //// Uncomment the following to use the documentation from XML documentation file.
-            //config.SetDocumentationProvider(new XmlDocumentationProvider(HttpContext.Current.Server.MapPath("~/App_Data/XmlDocument.xml")));
+            config.SetDocumentationProvider(new XmlDocumentationProvider(HttpContext.Current.Server.MapPath("~/App_Data/SearchApi.xml")));
 
             //// Uncomment the following to use "sample string" as the sample for all actions that have string as the body parameter or return type.
             //// Also, the string arrays will be used for IEnumerable<string>. The sample objects will be serialized into different media type 
             //// formats by the available formatters.
-            //config.SetSampleObjects(new Dictionary<Type, object>
-            //{
-            //    {typeof(string), "sample string"},
-            //    {typeof(IEnumerable<string>), new string[]{"sample 1", "sample 2"}}
-            //});
+            config.SetSampleObjects(new Dictionary<Type, object>
+            {
+                {typeof(FarmDto), new FarmDto{Name = "Pierrafortscha's Farm", Latitude=46.786415, Longitude =7.185928}},
+                {typeof(IEnumerable<FarmDto>),new []
+                {
+                    new FarmDto{Name = "Pierrafortscha's Farm", Latitude=46.786415, Longitude =7.185928},
+                    new FarmDto{Name = "Tentlingen's Farm House", Latitude=46.769621, Longitude =7.186067},
+                }}
+            });
 
             // Extend the following to provide factories for types not handled automatically (those lacking parameterless
             // constructors) or for which you prefer to use non-default property values. Line below provides a fallback
@@ -77,7 +83,7 @@ namespace SearchApi.Areas.HelpPage
 
             //// Uncomment the following to correct the sample response when the action returns an HttpResponseMessage with ObjectContent<string>.
             //// The sample will be generated as if the controller named "Values" and action named "Post" were returning a string.
-            //config.SetActualResponseType(typeof(string), "Values", "Post");
+            config.SetActualResponseType(typeof(IEnumerable<FarmDto>), "Search", "GetFarms");
         }
 
 #if Handle_PageResultOfT

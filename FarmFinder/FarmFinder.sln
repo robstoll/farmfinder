@@ -7,7 +7,7 @@ Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "FarmFinder", "FarmFinder\Fa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IndexUpdatingQueue", "IndexUpdatingQueue\IndexUpdatingQueue.csproj", "{F2588D87-7035-45EB-ABA5-D051AEA79124}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchApi", "SearchApi\SearchApi.csproj", "{CBE30529-1BFC-43EC-9549-3CD930A70472}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchApi", "SearchApi\SearchApi.csproj", "{3E0BA07E-45D7-4186-8EBA-6C9C1A707584}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{F2588D87-7035-45EB-ABA5-D051AEA79124}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2588D87-7035-45EB-ABA5-D051AEA79124}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2588D87-7035-45EB-ABA5-D051AEA79124}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CBE30529-1BFC-43EC-9549-3CD930A70472}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CBE30529-1BFC-43EC-9549-3CD930A70472}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CBE30529-1BFC-43EC-9549-3CD930A70472}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CBE30529-1BFC-43EC-9549-3CD930A70472}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E0BA07E-45D7-4186-8EBA-6C9C1A707584}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E0BA07E-45D7-4186-8EBA-6C9C1A707584}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E0BA07E-45D7-4186-8EBA-6C9C1A707584}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E0BA07E-45D7-4186-8EBA-6C9C1A707584}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

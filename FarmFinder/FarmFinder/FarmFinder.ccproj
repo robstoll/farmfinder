@@ -47,7 +47,7 @@
     </ProjectReference>
     <ProjectReference Include="..\SearchApi\SearchApi.csproj">
       <Name>SearchApi</Name>
-      <Project>{cbe30529-1bfc-43ec-9549-3cd930a70472}</Project>
+      <Project>{3e0ba07e-45d7-4186-8eba-6c9c1a707584}</Project>
       <Private>True</Private>
       <RoleType>Web</RoleType>
       <RoleName>SearchApi</RoleName>

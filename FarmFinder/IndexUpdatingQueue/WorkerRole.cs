@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Net;
 using System.Threading;
-using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.ServiceRuntime;
@@ -14,11 +10,11 @@ namespace IndexUpdatingQueue
     public class WorkerRole : RoleEntryPoint
     {
         // The name of your queue
-        const string QueueName = "ProcessingQueue";
+        const string QueueName = "farmfinder";
 
         // QueueClient is thread-safe. Recommended that you cache 
         // rather than recreating it on every request
-        QueueClient Client;
+        private QueueClient _client;
         ManualResetEvent CompletedEvent = new ManualResetEvent(false);
 
         public override void Run()
@@ -26,11 +22,11 @@ namespace IndexUpdatingQueue
             Trace.WriteLine("Starting processing of messages");
 
             // Initiates the message pump and callback is invoked for each message that is received, calling close on the client will stop the pump.
-            Client.OnMessage((receivedMessage) =>
+            _client.OnMessage((receivedMessage) =>
                 {
                     try
                     {
-                        // Process the message
+                        //TODO Process the message -> update index accordingly
                         Trace.WriteLine("Processing Service Bus message: " + receivedMessage.SequenceNumber.ToString());
                     }
                     catch
@@ -49,21 +45,16 @@ namespace IndexUpdatingQueue
 
             // Create the queue if it does not exist already
             string connectionString = CloudConfigurationManager.GetSetting("Microsoft.ServiceBus.ConnectionString");
-            var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
-            if (!namespaceManager.QueueExists(QueueName))
-            {
-                namespaceManager.CreateQueue(QueueName);
-            }
 
             // Initialize the connection to Service Bus Queue
-            Client = QueueClient.CreateFromConnectionString(connectionString, QueueName);
+            _client = QueueClient.CreateFromConnectionString(connectionString, QueueName);
             return base.OnStart();
         }
 
         public override void OnStop()
         {
             // Close the connection to Service Bus Queue
-            Client.Close();
+            _client.Close();
             CompletedEvent.Set();
             base.OnStop();
         }
