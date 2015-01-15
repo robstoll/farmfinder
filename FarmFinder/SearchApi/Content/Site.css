@@ -23,6 +23,14 @@ textarea {
     border-radius: 6px;
     border: 1px solid #eee;
 }
+
+.withBorder .title {
+    font-weight: bold;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
 .editor-label {
     float: left;
     clear: left;
@@ -48,4 +56,8 @@ textarea {
 }
 .btn-submit {
     margin-top: 10px;
+}
+#requestContainer,
+#responseContainer {
+    display: none;
 }
