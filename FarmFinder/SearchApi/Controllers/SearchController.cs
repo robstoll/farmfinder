@@ -30,7 +30,7 @@ namespace SearchApi.Controllers
                     Latitude = queryDto.Latitude - 0.001,
                     Longitude = queryDto.Longitude + 0.001
                 };
-                return Request.CreateResponse(HttpStatusCode.OK, new[] { responseDto });
+                return Request.CreateResponse(HttpStatusCode.OK, new[] { responseDto, responseDto });
             }
             return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
         }

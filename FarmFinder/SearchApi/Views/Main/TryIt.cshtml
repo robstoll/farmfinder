@@ -47,17 +47,19 @@
     <div class="title">Request</div>
     <div>
         <b>Method:</b> GET<br/>
-        <b>URL: </b> <span id="request"></span>
+        <b>URL: </b> <span id="request"></span><br/>
+        <b>Time:</b> <span id="requestTime"></span>
     </div>
 </div>
 
 <div id="responseContainer" class="withBorder">
     <div class="title">Response</div>
+    <b>Time:</b> <span id="responseTime"></span><br/>
+    <b>JSON:</b>
     <div id="response"></div>
 </div>
 
 @section Scripts {
-    @*@Scripts.Render("~/bundles/jqueryval")*@
 
     <script type="text/javascript">
         function executeQuery() {
@@ -68,6 +70,7 @@
 
             $("#request").html('/api/search/' + data);
             $("#requestContainer").show();
+            $("#requestTime").html(new Date().toISOString())
 
             $.getJSON("/api/search/", data, function(response) {
                 printLocations(response);
@@ -96,6 +99,7 @@
             html += "<br/>]";
             $("#response").html(html);
             $("#responseContainer").show();
+            $("#responseTime").html(new Date().toISOString())
         }
     </script>
 }
