@@ -58,6 +58,12 @@ textarea {
     margin-top: 10px;
 }
 #requestContainer,
-#responseContainer {
+#responseContainer,
+#errorResponseContainer {
     display: none;
+}
+
+.error {
+    border: 1px solid #d41d1d;
+    color: #d41d1d;
 }

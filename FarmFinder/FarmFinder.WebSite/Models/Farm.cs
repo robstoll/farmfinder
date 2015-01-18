@@ -6,24 +6,24 @@ namespace CH.Tutteli.FarmFinder.Website.Models
     {
         public int FarmId { get; set; }
 
-        [Required]
         /// <summary>
         /// Name of the farm as registered in farm finder.
         /// </summary>
+        [Required]
         public string Name { get; set; }
 
-        [Required]
-        [Range(-90,90)]
         /// <summary>
         /// Latitude of the farm using -90/90 convention.
         /// </summary>
+        [Required]
+        [Range(-90,90)]
         public double Latitude { get; set; }
 
-        [Required]
-        [Range(-180, 180)]
         /// <summary>
         /// Longitude of the farm using -180/180 convention.
         /// </summary>
+        [Required]
+        [Range(-180, 180)]
         public double Longitude { get; set; }
 
         [Required]

@@ -1,8 +1,11 @@
-﻿namespace CH.Tutteli.FarmFinder.Dtos
+﻿using System;
+
+namespace CH.Tutteli.FarmFinder.Dtos
 {
     /// <summary>
     /// Represents some basic information about a farm.
     /// </summary>
+    [Serializable]
     public class FarmLocationDto
     {
         /// <summary>

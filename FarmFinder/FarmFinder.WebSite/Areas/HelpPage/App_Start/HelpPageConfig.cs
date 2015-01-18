@@ -11,6 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Http;
+using CH.Tutteli.FarmFinder.Dtos;
 using CH.Tutteli.FarmFinder.Website.Areas.HelpPage.SampleGeneration;
 
 namespace CH.Tutteli.FarmFinder.Website.Areas.HelpPage.App_Start
