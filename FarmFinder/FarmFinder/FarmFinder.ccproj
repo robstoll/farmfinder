@@ -37,30 +37,40 @@
     <ServiceConfiguration Include="ServiceConfiguration.Cloud.cscfg" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IndexUpdatingQueue\IndexUpdatingQueue.csproj">
-      <Name>IndexUpdatingQueue</Name>
+    <Folder Include="FarmFinder.IndexUpdatingQueueContent" />
+    <Folder Include="FarmFinder.SearchApiContent\" />
+    <Folder Include="FarmFinder.WebSiteContent" />
+  </ItemGroup>
+  <ItemGroup>
+    <DiagnosticsConfiguration Include="FarmFinder.IndexUpdatingQueueContent\diagnostics.wadcfgx" />
+    <DiagnosticsConfiguration Include="FarmFinder.SearchApiContent\diagnostics.wadcfgx" />
+    <DiagnosticsConfiguration Include="FarmFinder.WebSiteContent\diagnostics.wadcfgx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FarmFinder.IndexUpdatingQueue\FarmFinder.IndexUpdatingQueue.csproj">
+      <Name>FarmFinder.IndexUpdatingQueue</Name>
       <Project>{f2588d87-7035-45eb-aba5-d051aea79124}</Project>
       <Private>True</Private>
       <RoleType>Worker</RoleType>
-      <RoleName>IndexUpdatingQueue</RoleName>
+      <RoleName>FarmFinder.IndexUpdatingQueue</RoleName>
       <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
     </ProjectReference>
-    <ProjectReference Include="..\WebSite\WebSite.csproj">
-      <Name>WebSite</Name>
+    <ProjectReference Include="..\FarmFinder.SearchApi\FarmFinder.SearchApi.csproj">
+      <Name>FarmFinder.SearchApi</Name>
+      <Project>{e506729f-e5db-40e4-833d-f49c139c3c32}</Project>
+      <Private>True</Private>
+      <RoleType>Web</RoleType>
+      <RoleName>FarmFinder.SearchApi</RoleName>
+      <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
+    </ProjectReference>
+    <ProjectReference Include="..\FarmFinder.WebSite\FarmFinder.WebSite.csproj">
+      <Name>FarmFinder.WebSite</Name>
       <Project>{3e0ba07e-45d7-4186-8eba-6c9c1a707584}</Project>
       <Private>True</Private>
       <RoleType>Web</RoleType>
-      <RoleName>WebSite</RoleName>
+      <RoleName>FarmFinder.WebSite</RoleName>
       <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="IndexUpdatingQueueContent\" />
-    <Folder Include="WebSiteContent" />
-  </ItemGroup>
-  <ItemGroup>
-    <DiagnosticsConfiguration Include="IndexUpdatingQueueContent\diagnostics.wadcfgx" />
-    <DiagnosticsConfiguration Include="WebSiteContent\diagnostics.wadcfgx" />
   </ItemGroup>
   <!-- Import the target files for this project template -->
   <PropertyGroup>

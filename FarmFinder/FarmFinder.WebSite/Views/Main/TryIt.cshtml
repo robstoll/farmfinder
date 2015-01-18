@@ -1,0 +1,105 @@
+﻿@model CH.Tutteli.FarmFinder.Dtos.QueryDto
+@{
+    ViewBag.Title = "Try it out!";
+}
+<h1>Try It out!</h1>
+<p>Fill out the form below to see what will be sent to the serivce as well as to see the response</p>
+<div class="withBorder">
+    <form id="search">
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Latitude)
+        </div>
+        <div class="editor-field">
+            @Html.TextBoxFor(model => model.Latitude)
+        </div>
+        @Html.ValidationMessageFor(model => model.Latitude)
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Longitude)
+        </div>
+        <div class="editor-field">
+            @Html.TextBoxFor(model => model.Longitude)
+        </div>
+        @Html.ValidationMessageFor(model => model.Longitude)
+
+        <div class="editor-label optional">
+            @Html.LabelFor(model => model.Query)
+        </div>
+        <div class="editor-field ">
+            @Html.TextBoxFor(model => model.Query)
+        </div>
+        @Html.ValidationMessageFor(model => model.Query)
+
+        <div class="editor-label optional">
+            @Html.LabelFor(model => model.Radius)
+        </div>
+        <div class="editor-field">
+            @Html.TextBoxFor(model => model.Radius)
+        </div>
+        @Html.ValidationMessageFor(model => model.Radius)
+
+        <div style="clear: both"></div>
+        <div><a class="btn btn-primary btn-submit" href="#search" onclick="executeQuery(); return false;">Search</a></div>
+    </form>
+</div>
+
+<div id="requestContainer" class="withBorder">
+    <div class="title">Request</div>
+    <div>
+        <b>Method:</b> GET<br/>
+        <b>URL: </b> <span id="request"></span><br/>
+        <b>Time:</b> <span id="requestTime"></span>
+    </div>
+</div>
+
+<div id="responseContainer" class="withBorder">
+    <div class="title">Response</div>
+    <b>Time:</b> <span id="responseTime"></span><br/>
+    <b>JSON:</b>
+    <div id="response"></div>
+</div>
+
+@section Scripts {
+
+    <script type="text/javascript">
+        function executeQuery() {
+            var data = "Latitude=" + $("#Latitude").val()
+                + "&Longitude=" + $("#Longitude").val()
+                + "&Radius=" + $("#Radius").val()
+                + "&Query=" + $("#Query").val();
+
+            $("#request").html('/api/search/' + data);
+            $("#requestContainer").show();
+            $("#requestTime").html(new Date().toISOString())
+
+            $.getJSON("/api/search/", data, function(response) {
+                printLocations(response);
+            });
+        }
+
+        function printLocations(locations) {
+            var html = "[<br/>";
+            var notFirst = false;
+            $.each(locations, function (_, value) {
+                if (notFirst) {
+                    html += ",<br/>";
+                }
+                html += "&nbsp;&nbsp;{";
+                var notFirst2 = false;
+                $.each(value, function (index, val) {
+                    if (notFirst2) {
+                        html += ", ";
+                    }
+                    html += index + ":" + val;
+                    notFirst2 = true;
+                });
+                html += "}";
+                notFirst = true;
+            });
+            html += "<br/>]";
+            $("#response").html(html);
+            $("#responseContainer").show();
+            $("#responseTime").html(new Date().toISOString())
+        }
+    </script>
+}

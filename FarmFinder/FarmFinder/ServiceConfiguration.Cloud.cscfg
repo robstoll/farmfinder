@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ServiceConfiguration serviceName="FarmFinder" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="4" osVersion="*" schemaVersion="2014-06.2.4">
-  <Role name="IndexUpdatingQueue">
+  <Role name="FarmFinder.WebSite">
     <Instances count="1" />
-    <ConfigurationSettings>
-      <Setting name="Microsoft.ServiceBus.ConnectionString" value="Endpoint=sb://farmfinder.servicebus.windows.net/;SharedAccessKeyName=farmfinder_backend;SharedAccessKey=4AzE5SBVi8wWbI5ssCaUilR/Jz5GPcNE14vzxtm5TuA=" />
-    </ConfigurationSettings>
+    <ConfigurationSettings />
   </Role>
-  <Role name="WebSite">
+  <Role name="FarmFinder.IndexUpdatingQueue">
+    <Instances count="1" />
+    <ConfigurationSettings />
+  </Role>
+  <Role name="FarmFinder.SearchApi">
     <Instances count="1" />
     <ConfigurationSettings />
   </Role>
