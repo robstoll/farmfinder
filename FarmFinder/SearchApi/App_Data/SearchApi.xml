@@ -184,22 +184,22 @@
             Use this attribute to change the name of the <see cref="T:SearchApi.Areas.HelpPage.ModelDescriptions.ModelDescription"/> generated for a type.
             </summary>
         </member>
-        <member name="T:SearchApi.Models.FarmDto">
+        <member name="T:SearchApi.Models.FarmLocationDto">
             <summary>
             Represents some basic information about a farm.
             </summary>
         </member>
-        <member name="P:SearchApi.Models.FarmDto.Name">
+        <member name="P:SearchApi.Models.FarmLocationDto.Name">
             <summary>
             Name of the farm as registered in farm finder.
             </summary>
         </member>
-        <member name="P:SearchApi.Models.FarmDto.Latitude">
+        <member name="P:SearchApi.Models.FarmLocationDto.Latitude">
             <summary>
             Latitude of the farm using -90/90 convention.
             </summary>
         </member>
-        <member name="P:SearchApi.Models.FarmDto.Longitude">
+        <member name="P:SearchApi.Models.FarmLocationDto.Longitude">
             <summary>
             Longitude of the farm using -180/180 convention.
             </summary>

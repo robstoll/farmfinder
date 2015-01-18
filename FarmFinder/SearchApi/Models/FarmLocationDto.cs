@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents some basic information about a farm.
     /// </summary>
-    public class FarmDto
+    public class FarmLocationDto
     {
         /// <summary>
         /// Name of the farm as registered in farm finder.

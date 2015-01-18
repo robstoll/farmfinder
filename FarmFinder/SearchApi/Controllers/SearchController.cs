@@ -19,12 +19,12 @@ namespace SearchApi.Controllers
         /// <param name="longitude"></param>
         /// <param name="dto"></param>
         /// <returns>The search results</returns>
-        [ResponseType(typeof(FarmDto))]
+        [ResponseType(typeof(FarmLocationDto))]
         public HttpResponseMessage GetFarms([FromUri] QueryDto queryDto)
         {
             if (ModelState.IsValid)
             {
-                var responseDto = new FarmDto
+                var responseDto = new FarmLocationDto
                 {
                     Name = "Dummy",
                     Latitude = queryDto.Latitude - 0.001,

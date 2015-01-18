@@ -43,11 +43,11 @@ namespace SearchApi.Areas.HelpPage
             //// formats by the available formatters.
             config.SetSampleObjects(new Dictionary<Type, object>
             {
-                {typeof(FarmDto), new FarmDto{Name = "Pierrafortscha's Farm", Latitude=46.786415, Longitude =7.185928}},
-                {typeof(IEnumerable<FarmDto>),new []
+                {typeof(FarmLocationDto), new FarmLocationDto{Name = "Pierrafortscha's Farm", Latitude=46.786415, Longitude =7.185928}},
+                {typeof(IEnumerable<FarmLocationDto>),new []
                 {
-                    new FarmDto{Name = "Pierrafortscha's Farm", Latitude=46.786415, Longitude =7.185928},
-                    new FarmDto{Name = "Tentlingen's Farm House", Latitude=46.769621, Longitude =7.186067},
+                    new FarmLocationDto{Name = "Pierrafortscha's Farm", Latitude=46.786415, Longitude =7.185928},
+                    new FarmLocationDto{Name = "Tentlingen's Farm House", Latitude=46.769621, Longitude =7.186067},
                 }}
             });
 
@@ -83,7 +83,7 @@ namespace SearchApi.Areas.HelpPage
 
             //// Uncomment the following to correct the sample response when the action returns an HttpResponseMessage with ObjectContent<string>.
             //// The sample will be generated as if the controller named "Values" and action named "Post" were returning a string.
-            config.SetActualResponseType(typeof(IEnumerable<FarmDto>), "Search", "GetFarms");
+            config.SetActualResponseType(typeof(IEnumerable<FarmLocationDto>), "Search", "GetFarms");
         }
 
 #if Handle_PageResultOfT
