@@ -4,11 +4,9 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.SearchView;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -18,20 +16,34 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.URI;
+
+import ch.tutteli.farmfinderapp.bl.ApiException;
+import ch.tutteli.farmfinderapp.bl.IRemoteSearch;
+import ch.tutteli.farmfinderapp.bl.JsonHelper;
+import ch.tutteli.farmfinderapp.bl.RemoteSearch;
+
 public class MapsActivity extends ActionBarActivity {
 
-    private GoogleMap map; // Might be null if Google Play services APK is not available.
+    // Might be null if Google Play services APK is not available.
+    private GoogleMap map;
+    private IRemoteSearch remoteSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        remoteSearch = new RemoteSearch(getString(R.string.search_api));
         setUpMapIfNeeded();
         handleIntent(getIntent());
-
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -80,23 +92,12 @@ public class MapsActivity extends ActionBarActivity {
     }
 
     private void findByQuery(String query){
-        //TODO move to other class
+        double latitude = 48.304238;
+        double longitude = 14.287945;
         try {
-            //TODO request farmers which are around this location by 50km and fulfill the given query
-//            HttpClient client = new DefaultHttpClient();
-//            HttpGet request = new HttpGet();
-//            request.setURI(new URI(getString(R.string.search_api)+"/"+latitude+","+longitude+"/q="+query));
-//            request.addHeader("Accept", "json/application");
-//            HttpResponse response = client.execute(request);
-//            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-//                JSONObject jObject = JsonHelper.InputStreamtoJson(response.getEntity().getContent());
-            changeMarker(new JSONObject("{'farms':["
-                    + "{'lat':'48.255856','long':'14.358788','title':'Ebelsberghof'},"
-                    + "]}"));
-//            }
-        } catch (Exception ex) {
-            //TODO exception handling
-            int i = 0;
+            changeMarker(remoteSearch.find(latitude, longitude, 50, query));
+        }catch(ApiException ex){
+            //TODO error handling
         }
     }
 
@@ -156,38 +157,18 @@ public class MapsActivity extends ActionBarActivity {
         }
     }
 
-    /**
-     * This is where we can add markers or lines, add listeners or move the camera. In this case, we
-     * just add a marker near Africa.
-     * <p/>
-     * This should only be called once and when we are sure that {@link #map} is not null.
-     */
     private void setUpMap() {
-        //TODO source out logic to own class
-
-        //TODO get user's location
         double latitude = 48.304238;
         double longitude = 14.287945;
         try {
-            //TODO request farmers which are around this location by 50km (make 50km configurable)
-//            HttpClient client = new DefaultHttpClient();
-//            HttpGet request = new HttpGet();
-//            request.setURI(new URI(getString(R.string.search_api)+"/"+latitude+","+longitude));
-//            request.addHeader("Accept", "json/application");
-//            HttpResponse response = client.execute(request);
-//            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-//                JSONObject jObject = JsonHelper.InputStreamtoJson(response.getEntity().getContent());
-            changeMarker(new JSONObject("{'farms':["
-                    + "{'lat':'48.255856','long':'14.358788','title':'Ebelsberghof'},"
-                    + "{'lat':'48.359072','long':'14.362907','title':'Müllers Bio-Rinder-Range'},"
-                    + "{'lat':'48.313752','long':'14.269738','title':'Frisch von Urfahr'},"
-                    + "{'lat':'48.302466','long':'14.402733','title':'Romans Bauernhof'}"
-                    + "]}"));
-//            }
-        } catch (Exception ex) {
-            //TODO exception handling
-            int i = 0;
+            changeMarker(remoteSearch.find(latitude, longitude, 50));
+        }catch(ApiException ex){
+            //TODO error handling
         }
+        moveCamera(latitude, longitude);
+    }
+
+    private void moveCamera(double latitude, double longitude) {
         CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(latitude, longitude));
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(10);
 
