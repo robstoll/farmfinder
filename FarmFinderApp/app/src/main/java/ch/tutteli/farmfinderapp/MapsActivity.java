@@ -1,7 +1,9 @@
 package ch.tutteli.farmfinderapp;
 
+import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -16,19 +18,11 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.net.URI;
-
 import ch.tutteli.farmfinderapp.bl.ApiException;
 import ch.tutteli.farmfinderapp.bl.IRemoteSearch;
-import ch.tutteli.farmfinderapp.bl.JsonHelper;
 import ch.tutteli.farmfinderapp.bl.RemoteSearch;
 
 public class MapsActivity extends ActionBarActivity {
@@ -87,40 +81,60 @@ public class MapsActivity extends ActionBarActivity {
 
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            findByQuery(intent.getStringExtra(SearchManager.QUERY));
+            find(intent.getStringExtra(SearchManager.QUERY));
         }
     }
 
-    private void findByQuery(String query){
-        double latitude = 48.304238;
-        double longitude = 14.287945;
+    private void find(String query) {
+        //todo get from settings
+        int radius = 50;
+        LatLng latLong = getCurrentPosition();
+        find(latLong.latitude, latLong.longitude, radius, query);
+    }
+
+    private void find(double latitude, double longitude) {
+        //todo get from settings
+        int radius = 50;
+        find(latitude, longitude, radius, null);
+    }
+
+    private void find(double latitude, double longitude, int radius, String query) {
         try {
-            changeMarker(remoteSearch.find(latitude, longitude, 50, query));
-        }catch(ApiException ex){
-            //TODO error handling
+            changeMarker(remoteSearch.find(latitude, longitude, radius, query));
+        } catch (ApiException ex) {
+            showErrorDialog(ex);
         }
     }
 
-    private void changeMarker(JSONObject jObject){
+    private void changeMarker(JSONArray jArray) {
         map.clear();
         try {
-            if (jObject != null) {
-                JSONArray jArray = jObject.getJSONArray("farms");
+            if (jArray != null) {
                 for (int i = 0; i < jArray.length(); ++i) {
                     JSONObject jsonItem = jArray.getJSONObject(i);
                     map.addMarker(
                             new MarkerOptions()
                                     .position(new LatLng(
-                                            jsonItem.getDouble("lat"),
-                                            jsonItem.getDouble("long")))
-                                    .title(jsonItem.getString("title")));
+                                            jsonItem.getDouble("Latitude"),
+                                            jsonItem.getDouble("Longitude")))
+                                    .title(jsonItem.getString("Name")));
                 }
             }
-//            }
         } catch (Exception ex) {
-            //TODO exception handling
-            int i = 0;
+            showErrorDialog(ex);
         }
+    }
+
+    private void showErrorDialog(Exception ex) {
+        new AlertDialog.Builder(this)
+                .setMessage(getString(R.string.dialog_unexpectedError_msg) + "\n" + ex.getMessage())
+                .setTitle(R.string.dialog_unexpectedError_title)
+                .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                })
+                .show();
     }
 
     @Override
@@ -158,14 +172,9 @@ public class MapsActivity extends ActionBarActivity {
     }
 
     private void setUpMap() {
-        double latitude = 48.304238;
-        double longitude = 14.287945;
-        try {
-            changeMarker(remoteSearch.find(latitude, longitude, 50));
-        }catch(ApiException ex){
-            //TODO error handling
-        }
-        moveCamera(latitude, longitude);
+        LatLng latLong = getCurrentPosition();
+        find(latLong.latitude, latLong.longitude);
+        moveCamera(latLong.latitude, latLong.longitude);
     }
 
     private void moveCamera(double latitude, double longitude) {
@@ -174,5 +183,10 @@ public class MapsActivity extends ActionBarActivity {
 
         map.moveCamera(center);
         map.animateCamera(zoom);
+    }
+
+    public LatLng getCurrentPosition() {
+        //TODO get current position;
+        return new LatLng(48.304238, 14.287945);
     }
 }

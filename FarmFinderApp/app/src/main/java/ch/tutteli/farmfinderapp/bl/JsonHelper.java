@@ -1,5 +1,6 @@
 package ch.tutteli.farmfinderapp.bl;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -9,7 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class JsonHelper {
-    public static JSONObject InputStreamtoJson(InputStream inputStream) throws IOException, JSONException {
+    public static JSONArray InputStreamToJsonArray(InputStream inputStream) throws IOException, JSONException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         StringBuilder sb = new StringBuilder();
         String line = null;
@@ -18,7 +19,7 @@ public class JsonHelper {
         }
         String s = sb.toString();
         if (!s.equals("")) {
-            return new JSONObject(sb.toString());
+            return new JSONArray(sb.toString());
         } else {
             return null;
         }
