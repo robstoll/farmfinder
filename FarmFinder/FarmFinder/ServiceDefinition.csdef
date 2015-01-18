@@ -5,7 +5,7 @@
       <Setting name="Microsoft.ServiceBus.ConnectionString" />
     </ConfigurationSettings>
   </WorkerRole>
-  <WebRole name="SearchApi" vmsize="Small">
+  <WebRole name="WebSite" vmsize="Small">
     <Sites>
       <Site name="Web">
         <Bindings>

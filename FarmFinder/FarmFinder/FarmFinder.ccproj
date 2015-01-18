@@ -45,22 +45,22 @@
       <RoleName>IndexUpdatingQueue</RoleName>
       <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
     </ProjectReference>
-    <ProjectReference Include="..\SearchApi\SearchApi.csproj">
-      <Name>SearchApi</Name>
+    <ProjectReference Include="..\WebSite\WebSite.csproj">
+      <Name>WebSite</Name>
       <Project>{3e0ba07e-45d7-4186-8eba-6c9c1a707584}</Project>
       <Private>True</Private>
       <RoleType>Web</RoleType>
-      <RoleName>SearchApi</RoleName>
+      <RoleName>WebSite</RoleName>
       <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="IndexUpdatingQueueContent\" />
-    <Folder Include="SearchApiContent\" />
+    <Folder Include="WebSiteContent" />
   </ItemGroup>
   <ItemGroup>
     <DiagnosticsConfiguration Include="IndexUpdatingQueueContent\diagnostics.wadcfgx" />
-    <DiagnosticsConfiguration Include="SearchApiContent\diagnostics.wadcfgx" />
+    <DiagnosticsConfiguration Include="WebSiteContent\diagnostics.wadcfgx" />
   </ItemGroup>
   <!-- Import the target files for this project template -->
   <PropertyGroup>

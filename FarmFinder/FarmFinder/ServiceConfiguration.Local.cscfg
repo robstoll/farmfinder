@@ -6,7 +6,7 @@
       <Setting name="Microsoft.ServiceBus.ConnectionString" value="Endpoint=sb://farmfinder.servicebus.windows.net/;SharedAccessKeyName=farmfinder_backend;SharedAccessKey=4AzE5SBVi8wWbI5ssCaUilR/Jz5GPcNE14vzxtm5TuA=" />
     </ConfigurationSettings>
   </Role>
-  <Role name="SearchApi">
+  <Role name="WebSite">
     <Instances count="1" />
     <ConfigurationSettings />
   </Role>
