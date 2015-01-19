@@ -6,7 +6,7 @@
     <string name="action_settings">Settings</string>
     <string name="search_title">Search</string>
     <string name="search_hint">Tomaten</string>
-    <string name="search_api">https://farmfinder.azurewebsites.net/api/search/</string>
+    <string name="search_api">https://searchapi.azurewebsites.net/search</string>
     <string name="dialog_unexpectedError_msg">Die Suche war nicht erfolgreich aufgrund eines unerwarteten Fehlers. Folgend ein paar Details:</string>
     <string name="dialog_unexpectedError_title">Unerwarteter Fehler aufgetreten</string>
 
