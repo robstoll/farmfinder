@@ -163,6 +163,15 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\FarmFinder.WebSite\Models\ApplicationDbContext.cs">
+      <Link>Models\ApplicationDbContext.cs</Link>
+    </Compile>
+    <Compile Include="..\FarmFinder.WebSite\Models\Farm.cs">
+      <Link>Models\Farm.cs</Link>
+    </Compile>
+    <Compile Include="..\FarmFinder.WebSite\Models\Product.cs">
+      <Link>Models\Product.cs</Link>
+    </Compile>
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\SearchController.cs" />
@@ -171,8 +180,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers.cs" />
-    <Compile Include="Models\ApplicationDbContext.cs" />
-    <Compile Include="Models\Farm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

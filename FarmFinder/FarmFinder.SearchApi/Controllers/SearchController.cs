@@ -74,7 +74,9 @@ namespace CH.Tutteli.FarmFinder.SearchApi.Controllers
             var lngFrom = bounds[0].getLongitudeInDegrees();
             var lngTo = bounds[1].getLongitudeInDegrees();
             var latQuery = NumericRangeQuery.NewDoubleRange("latitude", latFrom, latTo, true, true);
+            latQuery.Boost = 1.5f;
             var lngQuery = NumericRangeQuery.NewDoubleRange("longitude", lngFrom, lngTo, true, true);
+            lngQuery.Boost = 1.5f;
             var query = new BooleanQuery
             {
                 {latQuery, Occur.MUST},
@@ -82,9 +84,13 @@ namespace CH.Tutteli.FarmFinder.SearchApi.Controllers
             };
             if (!string.IsNullOrEmpty(queryDto.Query))
             {
-                var parser = new QueryParser(Version.LUCENE_30, "product", new StandardAnalyzer(Version.LUCENE_30));
-                query.Add(parser.Parse(queryDto.Query), Occur.MUST);
-
+                var standardAnalyzer = new StandardAnalyzer(Version.LUCENE_30);
+                var innerQuery = new BooleanQuery
+                {
+                    {new QueryParser(Version.LUCENE_30, "product_name", standardAnalyzer).Parse(queryDto.Query), Occur.SHOULD},
+                    {new QueryParser(Version.LUCENE_30, "product_description", standardAnalyzer).Parse(queryDto.Query), Occur.SHOULD},
+                };
+                query.Add(innerQuery, Occur.MUST);
             }
             var topDocs = searcher.Search(query, 100);
             var hits = topDocs.ScoreDocs;

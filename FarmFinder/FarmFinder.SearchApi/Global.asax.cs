@@ -1,8 +1,10 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
 using CH.Tutteli.FarmFinder.Website.Models;
+using Lucene.Net;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
@@ -29,29 +31,42 @@ namespace CH.Tutteli.FarmFinder.SearchApi
             CloudStorageAccount cloudStorageAccount;
             CloudStorageAccount.TryParse(CloudConfigurationManager.GetSetting("blobStorage"), out cloudStorageAccount);
             AzureDirectory = new AzureDirectory(cloudStorageAccount, "FarmCatalog");
-            var indexWriter = new IndexWriter(
+            using (var indexWriter = new IndexWriter(
                 AzureDirectory,
                 new StandardAnalyzer(Version.LUCENE_30),
                 true,
-                new IndexWriter.MaxFieldLength(IndexWriter.DEFAULT_MAX_FIELD_LENGTH));
-            
-
-            var db = new ApplicationDbContext();
-            var farms = await db.Farms.ToListAsync();
-            foreach (var farm in farms)
+                new IndexWriter.MaxFieldLength(IndexWriter.DEFAULT_MAX_FIELD_LENGTH)))
             {
-                var doc = new Document();
-                doc.Add(new Field("id", farm.FarmId.ToString(), Field.Store.YES, Field.Index.NO, Field.TermVector.NO));
-                doc.Add(new Field("name", farm.Name, Field.Store.YES, Field.Index.ANALYZED, Field.TermVector.YES));
-                //doc.Add(new NumericField("Latitude", 4, Field.Store.YES, false).SetIntValue((int)(farm.Latitude * MultiplyFactor)));
-                //doc.Add(new NumericField("Longitude", 4, Field.Store.YES, false).SetIntValue((int)(farm.Longitude * MultiplyFactor)));
-                doc.Add(new NumericField("latitude", Field.Store.YES, true).SetDoubleValue(farm.Latitude));
-                doc.Add(new NumericField("longitude", Field.Store.YES, true).SetDoubleValue(farm.Longitude));
-                indexWriter.AddDocument(doc);
-            }
 
-            indexWriter.Optimize();
-            indexWriter.Dispose();
+
+                var db = new ApplicationDbContext();
+                var farms = await db.Farms.Include(f => f.Products).ToListAsync();
+                foreach (var farm in farms)
+                {
+                    var doc = new Document();
+                    doc.Add(new Field("id", farm.FarmId.ToString(), Field.Store.YES, Field.Index.NO, Field.TermVector.NO));
+                    doc.Add(new Field("name", farm.Name, Field.Store.YES, Field.Index.ANALYZED, Field.TermVector.NO));
+                    doc.Add(new NumericField("latitude", Field.Store.YES, true).SetDoubleValue(farm.Latitude));
+                    doc.Add(new NumericField("longitude", Field.Store.YES, true).SetDoubleValue(farm.Longitude));
+                    foreach (var product in farm.Products)
+                    {
+                        doc.Add(new Field("product_id", product.ProductId.ToString(), Field.Store.YES, Field.Index.NO,
+                            Field.TermVector.NO));
+                        doc.Add(new Field("product_name", product.Name, Field.Store.YES, Field.Index.ANALYZED,
+                            Field.TermVector.NO));
+                        if (!string.IsNullOrEmpty(product.Description))
+                        {
+                            doc.Add(new Field("product_description", product.Description, Field.Store.YES,
+                                Field.Index.ANALYZED, Field.TermVector.NO));
+                        }
+                        doc.Add(new Field("product_inStock", product.InStock.ToString(), Field.Store.YES,
+                            Field.Index.ANALYZED, Field.TermVector.NO));
+                    }
+                    indexWriter.AddDocument(doc);
+                }
+
+                indexWriter.Optimize();
+            }
         }
     }
 }

@@ -5,7 +5,7 @@
 <h1>Try It out!</h1>
 <p>Fill out the form below to see what will be sent to the serivce as well as to see the response</p>
 <div class="withBorder">
-    <form id="search">
+    <form id="search" onsubmit="executeQuery(); return false;">
         <div class="editor-label">
             @Html.LabelFor(model => model.Latitude)
         </div>
@@ -39,7 +39,7 @@
         @Html.ValidationMessageFor(model => model.Radius)
 
         <div style="clear: both"></div>
-        <div><a class="btn btn-primary btn-submit" href="#search" onclick=" executeQuery(); return false; ">Search</a></div>
+        <div><input type="submit" class="btn btn-primary btn-submit" value="Search"/></div>
     </form>
 </div>
 
