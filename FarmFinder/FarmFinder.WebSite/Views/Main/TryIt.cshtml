@@ -75,7 +75,7 @@
                 + "&Longitude=" + $("#Longitude").val()
                 + "&Radius=" + $("#Radius").val()
                 + "&Query=" + $("#Query").val();
-            var url = 'http://localhost:5354/search/?callback=?&' + data;
+            var url = '@System.Configuration.ConfigurationManager.AppSettings["SEARCH_API"]?callback=?&' + data;
             $("#request").html(url);
             $("#requestContainer").show();
             $("#requestTime").html(new Date().toISOString());

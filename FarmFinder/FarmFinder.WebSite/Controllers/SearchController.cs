@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Description;
 using CH.Tutteli.FarmFinder.Dtos;
 
 namespace CH.Tutteli.FarmFinder.SearchApi.Controllers
@@ -13,6 +14,7 @@ namespace CH.Tutteli.FarmFinder.SearchApi.Controllers
         /// </summary>
         /// <param name="queryDto"></param>
         /// <returns>The search results</returns>
+        [ResponseType(typeof(FarmLocationDto))]
         public HttpResponseMessage GetFarms([FromUri] QueryDto queryDto)
         {
             return Request.CreateErrorResponse(HttpStatusCode.NotFound,

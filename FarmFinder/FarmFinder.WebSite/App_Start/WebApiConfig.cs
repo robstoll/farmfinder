@@ -6,12 +6,7 @@ namespace CH.Tutteli.FarmFinder.Website
     {
         public static void Register(HttpConfiguration config)
         {
-            // Web API configuration and services
-
-            config.Routes.MapHttpRoute(
-                name: "SearchApi",
-                routeTemplate: "api/{controller}/"
-            );
+            config.Routes.MapHttpRoute("SearchApi", "search/", new {controller = "Search"});
         }
     }
 }
