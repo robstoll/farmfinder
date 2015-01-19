@@ -84,19 +84,15 @@
                 url: url,
                 type: 'GET',
                 dataType: 'jsonp',
-                success: function (response) {
+                success: function(response) {
                     printLocations(response);
+                },
+                error: function(response, a, b) {
+                    $("#errorResponse").html(response.status + " " + response.statusText);
+                    $("#errorResponseContainer").show();
+                    $("#errorResponseTime").html(new Date().toISOString());
                 }
-            })
-
-            //$.getJSON(url, function(response) {
-            //        printLocations(response);
-            //    }
-            //).fail(function(response, a, b) {
-            //    $("#errorResponse").html(response.status + " " + response.statusText);
-            //    $("#errorResponseContainer").show();
-            //    $("#errorResponseTime").html(new Date().toISOString());
-            //});
+            });
         }
 
         function printLocations(locations) {
