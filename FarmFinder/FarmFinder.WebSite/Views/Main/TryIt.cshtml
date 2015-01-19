@@ -80,10 +80,14 @@
             $("#requestContainer").show();
             $("#requestTime").html(new Date().toISOString());
 
-            jsonp(url,
-            function (response) {
-                alert(response);
-            });
+            $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: 'jsonp',
+                success: function (response) {
+                    printLocations(response);
+                }
+            })
 
             //$.getJSON(url, function(response) {
             //        printLocations(response);
@@ -118,35 +122,6 @@
             $("#response").html(html);
             $("#responseContainer").show();
             $("#responseTime").html(new Date().toISOString());
-        }
-
-
-        //copied from http://weblog.west-wind.com/posts/2012/Apr/02/Creating-a-JSONP-Formatter-for-ASPNET-Web-API#WhydoweneedJSONP?
-        function jsonp(url, callback) {
-            // create a unique id
-            var id = "_" + (new Date()).getTime();
-
-            // create a global callback handler
-            window[id] = function (result) {
-                // forward the call to specified handler                                       
-                if (callback)
-                    callback(result);
-
-                // clean up: remove script and id
-                var sc = document.getElementById(id);
-                sc.parentNode.removeChild(sc);
-                window[id] = null;
-            }
-
-            url = url.replace("callback=?", "callback=" + id);
-
-            // create script tag that loads the 'JSONP script' 
-            // and executes it calling window[id] function                
-            var script = document.createElement("script");
-            script.setAttribute("id", id);
-            script.setAttribute("src", url);
-            script.setAttribute("type", "text/javascript");
-            document.body.appendChild(script);
         }
     </script>
 }

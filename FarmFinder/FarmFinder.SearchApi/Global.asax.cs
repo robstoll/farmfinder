@@ -1,6 +1,7 @@
 ﻿using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
+using WebApiContrib.Formatting.Jsonp;
 
 namespace CH.Tutteli.FarmFinder.SearchApi
 {
@@ -10,11 +11,7 @@ namespace CH.Tutteli.FarmFinder.SearchApi
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-
-            GlobalConfiguration
-        .Configuration
-        .Formatters
-        .Insert(0, new Westwind.Web.WebApi.JsonpFormatter());
+            GlobalConfiguration.Configuration.AddJsonpFormatter();
         }
     }
 }
