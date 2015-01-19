@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using CH.Tutteli.FarmFinder.Website.Models;
 
@@ -23,7 +24,36 @@ namespace CH.Tutteli.FarmFinder.Website.Migrations
                     Zip = "4033",
                     Email = "info@ebelsbergerhof.at",
                     PhoneNumber = "+43 660 123 45 67",
-                    Website = "http://ebelsbergerhof.at"
+                    Website = "http://ebelsbergerhof.at",
+                    Products = new List<Product>
+                    {
+                        new Product
+                        {
+                            Name = "Tomaten",
+                            Description = "Die Tomaten werden im Gewächshaus angebaut und von Hand gepflückt.",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Salat Kartoffeln",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Festkochende Kartoffeln",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Gurken",
+                            InStock = false
+                        },
+                        new Product
+                        {
+                            Name = "Karotten",
+                            InStock = false
+                        },
+                    }
                 },
                 new Farm
                 {
@@ -33,7 +63,41 @@ namespace CH.Tutteli.FarmFinder.Website.Migrations
                     Address = "Oberkulm 1",
                     Zip = "4203",
                     City = "Altenberg bei Linz",
-                    PhoneNumber = "+43 123 456 78 90"
+                    PhoneNumber = "+43 123 456 78 90",
+                    Products = new List<Product>
+                    {
+                        new Product
+                        {
+                            Name = "Tomaten",
+                            InStock = false
+                        },
+                        new Product
+                        {
+                            Name = "Salat Kartoffeln",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Festkochende Kartoffeln",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Gurken",
+                            InStock = false
+                        },
+                        new Product
+                        {
+                            Name = "Karotten",
+                            InStock = false
+                        },
+                        new Product
+                        {
+                            Name = "Porree",
+                            Description = "Spanischer Lauch welche im Sommer angepflanzt und für den Winter eingelagert wurde.",
+                            InStock = true
+                        },
+                    }
                 },
                 new Farm
                 {
@@ -43,8 +107,32 @@ namespace CH.Tutteli.FarmFinder.Website.Migrations
                     Address = "Am grünen Hang",
                     Zip = "4020",
                     City = "Linz",
-                    PhoneNumber = "+43 578 963 85 21"
-                }   ,
+                    PhoneNumber = "+43 578 963 85 21",
+                    Products = new List<Product>
+                    {
+                        new Product
+                        {
+                            Name = "Tomaten",
+                            InStock = false
+                        },
+                        new Product
+                        {
+                            Name = "Gurken",
+                            InStock = false
+                        },
+                        new Product
+                        {
+                            Name = "Karotten",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Porree",
+                            Description = "Spanischer Lauch welche im Sommer angepflanzt und für den Winter eingelagert wurde.",
+                            InStock = true
+                        },
+                    }
+                },
                 new Farm
                 {
                     Name = "Romans Bauernhof",
@@ -53,21 +141,83 @@ namespace CH.Tutteli.FarmFinder.Website.Migrations
                     Address = "Holzwinden",
                     Zip = "4221",
                     City = "Steyregg",
-                    Email = "romans-bauernhof@gmx.net"
+                    Email = "romans-bauernhof@gmx.net",
+                    Products = new List<Product>
+                    {
+                        new Product
+                        {
+                            Name = "Tomaten",
+                            InStock = false
+                        },
+                        new Product
+                        {
+                            Name = "Salat Kartoffeln",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Festkochende Kartoffeln",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Gurken",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Karotten",
+                            InStock = false
+                        },
+                        new Product
+                        {
+                            Name = "Porree",
+                            InStock = false
+                        },
+                    }
                 },
                 new Farm
                 {
-                    Name="Mayrs Hof",
+                    Name = "Mayrs Hof",
                     Latitude = 48.317164,
                     Longitude = 14.468286,
                     Address = "Grünbachstrasse",
                     Zip = "4221",
-                    City="Steyregg",
-                    PhoneNumber = "+43 741 852 96 30"
+                    City = "Steyregg",
+                    PhoneNumber = "+43 741 852 96 30",
+                    Products = new List<Product>
+                    {
+                        new Product
+                        {
+                            Name = "Tomaten",
+                            InStock = false
+                        },
+                        new Product
+                        {
+                            Name = "Kartoffeln",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Gurken",
+                            InStock = false
+                        },
+                        new Product
+                        {
+                            Name = "Karotten",
+                            InStock = false
+                        },
+                        new Product
+                        {
+                            Name = "Lauch",
+                            Description = "Spanischer Lauch welche im Sommer angepflanzt und für den Winter eingelagert wurde.",
+                            InStock = true
+                        },
+                    }
                 },
                 new Farm
                 {
-                    Name="Pöllerbachhof",
+                    Name = "Pöllerbachhof",
                     Latitude = 48.435684,
                     Longitude = 14.286400,
                     Address = "Davidschlag 43",
@@ -75,27 +225,111 @@ namespace CH.Tutteli.FarmFinder.Website.Migrations
                     City = "Kirchschlag bei Linz",
                     Website = "http://poellerbach.at",
                     PhoneNumber = "+43 789 456 12 23",
-                    Email = "bestellung@poellerbach.at"
+                    Email = "bestellung@poellerbach.at",
+                    Products = new List<Product>
+                    {
+                        new Product
+                        {
+                            Name = "Tomaten",
+                            InStock = false
+                        },
+                        new Product
+                        {
+                            Name = "Salat Kartoffeln",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Festkochende Kartoffeln",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Gurken",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Karotten",
+                            InStock = true
+                        },
+                    }
                 },
                 new Farm
                 {
                     Name = "Gesundes Essen",
                     Latitude = 48.454379,
                     Longitude = 14.096768,
-                    Address="Am Emelberg",
-                    Zip="4174",
-                    City="Niederwaldkirchen",
-                    PhoneNumber="+43 600 100 10 10"
+                    Address = "Am Emelberg",
+                    Zip = "4174",
+                    City = "Niederwaldkirchen",
+                    PhoneNumber = "+43 600 100 10 10",
+                    Products = new List<Product>
+                    {
+                        new Product
+                        {
+                            Name = "frische Tomaten",
+                            InStock = false
+                        },
+                        new Product
+                        {
+                            Name = "Salat Kartoffeln",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Kartoffeln",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Gurken",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Karotten",
+                            InStock = true
+                        },
+                    }
                 },
-                    new Farm
+                new Farm
                 {
                     Name = "Görlitzerhof",
                     Latitude = 48.451470,
                     Longitude = 14.120414,
-                    Address="Görlitzer",
-                    Zip="4174",
-                    City="Niederwaldkirchen",
-                    PhoneNumber="+43 600 200 20 20"
+                    Address = "Görlitzer",
+                    Zip = "4174",
+                    City = "Niederwaldkirchen",
+                    PhoneNumber = "+43 600 200 20 20",
+                    Products = new List<Product>
+                    {
+                        new Product
+                        {
+                            Name = "Rispentomaten",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Salat Kartoffeln",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Festkochende Kartoffeln",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Gurken",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Karotten",
+                            InStock = true
+                        },
+                    }
                 },
                 new Farm
                 {
@@ -103,20 +337,82 @@ namespace CH.Tutteli.FarmFinder.Website.Migrations
                     Latitude = 48.387631,
                     Longitude = 14.223175,
                     Address = "Eidenberg",
-                    Zip="4201",
+                    Zip = "4201",
                     City = "Eidenberg",
                     Website = "http://bio-eidenberg.at",
-                    Email="info@eidenberg.at"
+                    Email = "info@eidenberg.at",
+                    Products = new List<Product>
+                    {
+                        new Product
+                        {
+                            Name = "Tomaten",
+                            InStock = false
+                        },
+                        new Product
+                        {
+                            Name = "Salat Kartoffeln",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Festkochende Kartoffeln",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Gurken",
+                            InStock = false
+                        },
+                        new Product
+                        {
+                            Name = "Karotten",
+                            InStock = true
+                        },
+                    }
                 },
                 new Farm
                 {
-                    Name="Theos Bauernhof",
+                    Name = "Theos Bauernhof",
                     Latitude = 48.366788,
                     Longitude = 14.250984,
-                    Address="Hametner 12a",
+                    Address = "Hametner 12a",
                     Zip = "4040",
-                    City="Lichtenberg",
-                    PhoneNumber = "+43 578 945 12 12"
+                    City = "Lichtenberg",
+                    PhoneNumber = "+43 578 945 12 12",
+                    Products = new List<Product>
+                    {
+                        new Product
+                        {
+                            Name = "Tomaten",
+                            InStock = false
+                        },
+                        new Product
+                        {
+                            Name = "Salat Kartoffeln",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Festkochende Kartoffeln",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Gurken",
+                            InStock = false
+                        },
+                        new Product
+                        {
+                            Name = "Karotten",
+                            InStock = true
+                        },
+                           new Product
+                        {
+                            Name = "Lauch",
+                            Description = "Spanischer Lauch welche im Sommer angepflanzt und für den Winter eingelagert wurde.",
+                            InStock = true
+                        },
+                    }
                 },
                 new Farm
                 {
@@ -126,9 +422,42 @@ namespace CH.Tutteli.FarmFinder.Website.Migrations
                     Address = "Zeinersdorf",
                     Zip = "4312",
                     City = "Ried in der Riedmark",
-                    PhoneNumber = "+43 120 200 12 12"
-                }
-                );
+                    PhoneNumber = "+43 120 200 12 12",
+                    Products = new List<Product>
+                    {
+                        new Product
+                        {
+                            Name = "Tomaten",
+                            InStock = false
+                        },
+                        new Product
+                        {
+                            Name = "Salat Kartoffeln",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Festkochende Kartoffeln",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Gurken",
+                            InStock = true
+                        },
+                        new Product
+                        {
+                            Name = "Karotten",
+                            InStock = true
+                        },
+                           new Product
+                        {
+                            Name = "Lauch",
+                            Description = "Spanischer Lauch welche im Sommer angepflanzt und für den Winter eingelagert wurde.",
+                            InStock = true
+                        },
+                    }
+                });
         }
     }
 }

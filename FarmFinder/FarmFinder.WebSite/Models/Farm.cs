@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace CH.Tutteli.FarmFinder.Website.Models
 {
@@ -45,5 +46,11 @@ namespace CH.Tutteli.FarmFinder.Website.Models
         [DataType(DataType.PhoneNumber)]
         public string PhoneNumber { get; set; }
 
+        public virtual ICollection<Product> Products { get; set; }
+
+        public Farm()
+        {
+            Products = new List<Product>();
+        }
     }
 }

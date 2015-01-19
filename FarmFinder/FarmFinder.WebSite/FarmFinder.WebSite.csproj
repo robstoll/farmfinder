@@ -173,6 +173,7 @@
     <Compile Include="Areas\HelpPage\ModelDescriptions\ParameterDescription.cs" />
     <Compile Include="Areas\HelpPage\ModelDescriptions\SimpleTypeModelDescription.cs" />
     <Compile Include="Controllers\FarmController.cs" />
+    <Compile Include="Controllers\ProductsController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Migrations\201501181230528_Initial.cs" />
     <Compile Include="Migrations\201501181230528_Initial.Designer.cs">
@@ -181,6 +182,10 @@
     <Compile Include="Migrations\201501181343421_AddedRequiredAttributes.cs" />
     <Compile Include="Migrations\201501181343421_AddedRequiredAttributes.Designer.cs">
       <DependentUpon>201501181343421_AddedRequiredAttributes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201501191603296_Products.cs" />
+    <Compile Include="Migrations\201501191603296_Products.Designer.cs">
+      <DependentUpon>201501191603296_Products.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -198,6 +203,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Product.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebRole.cs" />
   </ItemGroup>
@@ -261,6 +267,11 @@
     <Content Include="Views\Farm\Details.cshtml" />
     <Content Include="Views\Farm\Edit.cshtml" />
     <Content Include="Views\Farm\Index.cshtml" />
+    <Content Include="Views\Products\Create.cshtml" />
+    <Content Include="Views\Products\Delete.cshtml" />
+    <Content Include="Views\Products\Details.cshtml" />
+    <Content Include="Views\Products\Edit.cshtml" />
+    <Content Include="Views\Products\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201501181230528_Initial.resx">
@@ -268,6 +279,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201501181343421_AddedRequiredAttributes.resx">
       <DependentUpon>201501181343421_AddedRequiredAttributes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201501191603296_Products.resx">
+      <DependentUpon>201501191603296_Products.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
