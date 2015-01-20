@@ -12,7 +12,7 @@ namespace CH.Tutteli.FarmFinder.Website
 {
     public class QueueHelper
     {
-         const string QueueName = "farmfinder";
+        const string QueueName = "farmfinder";
 
         public static QueueClient QueueClient { get; set; }
 

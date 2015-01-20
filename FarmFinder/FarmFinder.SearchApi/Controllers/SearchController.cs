@@ -29,9 +29,8 @@ namespace CH.Tutteli.FarmFinder.SearchApi.Controllers
             {
                 try
                 {
-                    var searcher = new IndexSearcher(WebApiApplication.AzureDirectory);
-                    ScoreDoc[] hits = Query(queryDto, searcher);
-                    List<FarmLocationDto> result = ConvertHitsToFarmLocationDtos(hits, searcher);
+                    ScoreDoc[] hits = Query(queryDto);
+                    List<FarmLocationDto> result = ConvertHitsToFarmLocationDtos(hits);
                     return Request.CreateResponse(HttpStatusCode.OK, result);
                 }
                 catch (ParseException ex)
@@ -42,30 +41,9 @@ namespace CH.Tutteli.FarmFinder.SearchApi.Controllers
             return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
         }
 
-        private static List<FarmLocationDto> ConvertHitsToFarmLocationDtos(ScoreDoc[] hits, IndexSearcher searcher)
+        private static ScoreDoc[] Query(QueryDto queryDto)
         {
-            var result = new List<FarmLocationDto>();
-            for (int i = 0; i < hits.Length; ++i)
-            {
-                Document doc = searcher.Doc(hits[i].Doc);
-
-                double lat;
-                double lng;
-                if (double.TryParse(doc.Get("latitude"), out lat) && double.TryParse(doc.Get("longitude"), out lng))
-                {
-                    result.Add(new FarmLocationDto
-                    {
-                        Name = doc.Get("name"),
-                        Latitude = lat,
-                        Longitude = lng
-                    });
-                }
-            }
-            return result;
-        }
-
-        private static ScoreDoc[] Query(QueryDto queryDto, IndexSearcher searcher)
-        {
+            var searcher = WebApiApplication.Searcher;
             GeoLocation geoLocation = GeoLocation.FromDegrees(queryDto.Latitude, queryDto.Longitude);
             GeoLocation[] bounds = geoLocation.BoundingCoordinates(queryDto.Radius);
             double latFrom = bounds[0].getLatitudeInDegrees();
@@ -110,6 +88,29 @@ namespace CH.Tutteli.FarmFinder.SearchApi.Controllers
             TopDocs topDocs = searcher.Search(query, 100);
             ScoreDoc[] hits = topDocs.ScoreDocs;
             return hits;
+        }
+
+        private static List<FarmLocationDto> ConvertHitsToFarmLocationDtos(ScoreDoc[] hits)
+        {
+            var searcher = WebApiApplication.Searcher;
+            var result = new List<FarmLocationDto>();
+            foreach (ScoreDoc scoreDoc in hits)
+            {
+                var doc = searcher.Doc(scoreDoc.Doc);
+
+                double lat;
+                double lng;
+                if (double.TryParse(doc.Get("latitude"), out lat) && double.TryParse(doc.Get("longitude"), out lng))
+                {
+                    result.Add(new FarmLocationDto
+                    {
+                        Name = doc.Get("name"),
+                        Latitude = lat,
+                        Longitude = lng
+                    });
+                }
+            }
+            return result;
         }
     }
 }

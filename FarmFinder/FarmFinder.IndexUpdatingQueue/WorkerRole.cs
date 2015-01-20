@@ -24,52 +24,41 @@ namespace IndexUpdatingQueue
     public class WorkerRole : RoleEntryPoint
     {
 
-        const string QueueName = "farmfinder";
+        private const string QueueName = "farmfinder";
+        private const string TopicName = "recreateindex";
 
         private readonly ManualResetEvent _completedEvent = new ManualResetEvent(false);
 
         private QueueClient _queueClient;
-        private QueueClient _topiClient;
+        private TopicClient _topicClient;
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
         private AzureDirectory _azureDirectory;
 
-        private DateTime _lastNotification;
-
         public override void Run()
         {
-            Trace.WriteLine("Starting processing of messages");
-
             _queueClient.OnMessage(async receivedMessage =>
+            {
+                var sequenceNumber = receivedMessage.SequenceNumber;
+                try
                 {
-                    try
-                    {
-                        var dto = receivedMessage.GetBody<UpdateIndexDto>();
-                        await  HandleMessage(dto);
-                        receivedMessage.Complete();
-                        InformWebRolesAboutNewIndex();
-                    }
-                    catch(Exception ex)
-                    {
-                        //no idea why it does not work but well, log it and abandon the message
-                        Trace.TraceWarning("Exception occurred during the read of message '" + receivedMessage.SequenceNumber + "': " + ex.Message);
-                        //todo mabye need to abandon messages in the future, not yet sure when it makes sense
-                        //receivedMessage.Abandon(); 
-                    }
-                });
+                    var dto = receivedMessage.GetBody<UpdateIndexDto>();
+                    await  HandleMessage(dto);
+                    InformWebRolesAboutNewIndex();
+                }
+                catch(Exception ex)
+                {
+                    //no idea why it does not work but well, log it
+                    Trace.TraceWarning("Exception occurred during the read of message '" + sequenceNumber + "': " + ex.Message);
+                    
+                }
+            });
 
             _completedEvent.WaitOne();
         }
 
         private void InformWebRolesAboutNewIndex()
         {
-            //todo wait between updates
-            var last = _lastNotification.AddMinutes(1);
-            if (last > DateTime.Now)
-            {
-                Thread.Sleep((int)(last - DateTime.Now).TotalMilliseconds);
-            }
-            _lastNotification = DateTime.Now;
-
+            _topicClient.Send(new BrokeredMessage(true));
         }
 
         private async Task HandleMessage(UpdateIndexDto dto)
@@ -116,7 +105,8 @@ namespace IndexUpdatingQueue
             _queueClient = QueueClient.CreateFromConnectionString(connectionString, QueueName);
 
             connectionString = CloudConfigurationManager.GetSetting("ServiceBus.TopicConnectionString");
-            _topiClient = QueueClient.CreateFromConnectionString(connectionString, QueueName);
+            _topicClient = TopicClient.CreateFromConnectionString(connectionString, TopicName);
+    
 
             Task.Run(async () => await InitialiseAzureDirectory()).Wait();
 
@@ -142,6 +132,8 @@ namespace IndexUpdatingQueue
             {
                 await CreateIndex();
             }
+
+            InformWebRolesAboutNewIndex();
         }
 
         private async Task UpdateIndex()
@@ -192,6 +184,7 @@ namespace IndexUpdatingQueue
 
             await _db.SaveChangesAsync();
         }
+        
         private void AddFarmToIndex(Farm farm, IndexWriter indexWriter)
         {
             var doc = CreateDocumentFromFarm(farm);
@@ -199,7 +192,6 @@ namespace IndexUpdatingQueue
             _db.Entry(farm).State = EntityState.Modified;
             farm.IndexDateTime = DateTime.Now;
         }
-
 
         private void UpdateFarmInIndex(Farm farm, IndexWriter indexWriter)
         {
