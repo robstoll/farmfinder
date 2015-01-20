@@ -53,17 +53,12 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
                 farm = db.Farms.Add(farm);
                 await db.SaveChangesAsync();
 
-                InformWorkerRoleToReIndex(new UpdateIndexDto { FarmId = farm.FarmId, UpdateMethod = EUpdateMethod.Create });
+                QueueHelper.Send(farm, EUpdateMethod.Create);
 
                 return RedirectToAction("Index");
             }
 
             return View(farm);
-        }
-
-        private void InformWorkerRoleToReIndex(UpdateIndexDto updateIndexDto)
-        {
-            WebApiApplication.QueueClient.Send(new BrokeredMessage(updateIndexDto));
         }
 
         // GET: Farm/Edit/5
@@ -94,7 +89,7 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
                 farm.UpdateDateTime = DateTime.Now;
                 await db.SaveChangesAsync();
 
-                InformWorkerRoleToReIndex(new UpdateIndexDto { FarmId = farm.FarmId, UpdateMethod = EUpdateMethod.Update });
+                QueueHelper.Send(farm, EUpdateMethod.Update);
 
                 return RedirectToAction("Index");
             }
@@ -126,7 +121,7 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
             db.Entry(farm).State = EntityState.Modified;
             await db.SaveChangesAsync();
 
-            InformWorkerRoleToReIndex(new UpdateIndexDto { FarmId = farm.FarmId, UpdateMethod = EUpdateMethod.Delete });
+            QueueHelper.Send(farm, EUpdateMethod.Delete);
 
             return RedirectToAction("Index");
         }

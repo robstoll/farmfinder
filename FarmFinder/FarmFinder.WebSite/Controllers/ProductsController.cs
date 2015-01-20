@@ -90,12 +90,7 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
             await db.SaveChangesAsync();
 
             //db was saved successfully, inform worker role via IndexUpdatingQueue
-            InformWorkerRoleToReIndex(new UpdateIndexDto {FarmId = product.FarmRefId, UpdateMethod = EUpdateMethod.Update});
-        }
-
-        private void InformWorkerRoleToReIndex(UpdateIndexDto updateIndexDto)
-        {
-            WebApiApplication.QueueClient.Send(new BrokeredMessage(updateIndexDto));
+            QueueHelper.Send(product.Farm, EUpdateMethod.Update);
         }
 
         // GET: Farm/1/Products/Product/Edit/5

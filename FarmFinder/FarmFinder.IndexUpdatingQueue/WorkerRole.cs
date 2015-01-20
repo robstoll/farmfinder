@@ -38,7 +38,7 @@ namespace IndexUpdatingQueue
         {
             Trace.WriteLine("Starting processing of messages");
 
-            _client.OnMessage(receivedMessage =>
+            _client.OnMessage(async receivedMessage =>
                 {
                     try
                     {
@@ -50,20 +50,22 @@ namespace IndexUpdatingQueue
                         }
                         _lastUpdate = DateTime.Now;
                         var dto = receivedMessage.GetBody<UpdateIndexDto>();
-                        HandleMessage(dto);
+                        await  HandleMessage(dto);
+                        receivedMessage.Complete();  
                     }
                     catch(Exception ex)
                     {
                         //no idea why it does not work but well, log it and abandon the message
                         Trace.TraceWarning("Exception occurred during the read of message '" + receivedMessage.SequenceNumber + "': " + ex.Message);
-                        receivedMessage.Abandon(); 
+                        //todo mabye need to abandon messages in the future, not yet sure when it makes sense
+                        //receivedMessage.Abandon(); 
                     }
                 });
 
             _completedEvent.WaitOne();
         }
 
-        private async void HandleMessage(UpdateIndexDto dto)
+        private async Task HandleMessage(UpdateIndexDto dto)
         {
             using (var indexWriter = CreateIndexWriter())
             {
@@ -72,16 +74,16 @@ namespace IndexUpdatingQueue
                 {
                     case EUpdateMethod.Create:
                         farm = await _db.Farms.Include(f => f.Products).Where(f => f.FarmId == dto.FarmId).FirstAsync();
-                        if (farm != null)
+                        if (farm != null && farm.UpdateDateTime == dto.UpdateTime)
                         {
-                            indexWriter.AddDocument(CreateDocumentFromFarm(farm));
+                            AddDocToIndex(farm, indexWriter);
                         }
                         break;
                     case EUpdateMethod.Update:
                         farm = await _db.Farms.Include(f => f.Products).Where(f => f.FarmId == dto.FarmId).FirstAsync();
-                        if (farm != null)
+                        if (farm != null && farm.UpdateDateTime == dto.UpdateTime)
                         {
-                            indexWriter.UpdateDocument(new Term("id", dto.FarmId.ToString()), CreateDocumentFromFarm(farm));
+                            ModifyDocInIndex(farm, indexWriter);
                         }
                         break;
                     case EUpdateMethod.Delete:
@@ -105,21 +107,17 @@ namespace IndexUpdatingQueue
             string connectionString = CloudConfigurationManager.GetSetting("Microsoft.ServiceBus.ConnectionString");
             _client = QueueClient.CreateFromConnectionString(connectionString, QueueName);
 
-            InitialiseAzureDirectory();
+            Task.Run(async () => await InitialiseAzureDirectory()).Wait();
 
             return base.OnStart();
         }
 
-        private async void InitialiseAzureDirectory()
+        private async Task InitialiseAzureDirectory()
         {
             CloudStorageAccount cloudStorageAccount;
             CloudStorageAccount.TryParse(CloudConfigurationManager.GetSetting("blobStorage"), out cloudStorageAccount);
             _azureDirectory = new AzureDirectory(cloudStorageAccount, "FarmCatalog");
 
-            using (var indexWriter = CreateIndexWriter())
-            {
-                indexWriter.DeleteAll();
-            }
 
             var searcher = new IndexSearcher(_azureDirectory);
             var hits = searcher.Search(
@@ -144,8 +142,7 @@ namespace IndexUpdatingQueue
                 {
                     try
                     {
-                        var doc = CreateDocumentFromFarm(farm);
-                        indexWriter.AddDocument(doc);
+                        AddDocToIndex(farm, indexWriter);
                     }
                     catch (Exception e)
                     {
@@ -158,8 +155,7 @@ namespace IndexUpdatingQueue
                 {
                     try
                     {
-                        var doc = CreateDocumentFromFarm(farm);
-                        indexWriter.UpdateDocument(new Term("id", farm.FarmId.ToString()), doc);
+                        ModifyDocInIndex(farm, indexWriter);
                     }
                     catch (Exception e)
                     {
@@ -172,25 +168,40 @@ namespace IndexUpdatingQueue
                 {
                     try
                     {
-                        indexWriter.DeleteDocuments(new Term("id",farm.FarmId.ToString()));
-                        _db.Farms.Remove(farm);
+                        DeleteDocFromIndex(indexWriter, farm);
                     }
                     catch (Exception e)
                     {
                         //TODO error handling. Should certainly not abort the adddition of documents
                     }
                 });
-                await _db.SaveChangesAsync();
 
                 indexWriter.Optimize();
             }
-        }
 
-        private void CreateNew()
+            await _db.SaveChangesAsync();
+        }
+        private void AddDocToIndex(Farm farm, IndexWriter indexWriter)
         {
-            throw new NotImplementedException();
+            var doc = CreateDocumentFromFarm(farm);
+            indexWriter.AddDocument(doc);
+            _db.Entry(farm).State = EntityState.Modified;
+            farm.IndexDateTime = DateTime.Now;
         }
 
+
+        private void ModifyDocInIndex(Farm farm, IndexWriter indexWriter)
+        {
+            var doc = CreateDocumentFromFarm(farm);
+            indexWriter.UpdateDocument(new Term("id", farm.FarmId.ToString()), doc);
+            farm.IndexDateTime = DateTime.Now;
+        }
+
+        private void DeleteDocFromIndex(IndexWriter indexWriter, Farm farm)
+        {
+            indexWriter.DeleteDocuments(new Term("id", farm.FarmId.ToString()));
+            _db.Farms.Remove(farm);
+        }
 
         private async Task CreateIndex()
         {
@@ -201,16 +212,19 @@ namespace IndexUpdatingQueue
                 {
                     try
                     {
-                        var doc = CreateDocumentFromFarm(farm);
-                        indexWriter.AddDocument(doc);
+                        AddDocToIndex(farm, indexWriter);
                     }
                     catch (Exception e)
                     {
                         //TODO error handling. Should certainly not abort the adddition of documents
                     }
                 });
+
+
                 indexWriter.Optimize();
             }
+
+            await _db.SaveChangesAsync();
         }
 
         private IndexWriter CreateIndexWriter()
