@@ -66,14 +66,14 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
         public async Task<ActionResult> Create(
             [Bind(Include = "ProductId,FarmRefId,Name,Description,InStock")] Product product)
         {
+            Farm farm = await db.Farms.FindAsync(product.FarmRefId);
             if (ModelState.IsValid)
             {
                 db.Products.Add(product);
-                await SaveChangesAndReIndex(product);
+                await SaveChangesAndReIndex(farm);
 
                 return RedirectToAction("Index", new {farmId = product.FarmRefId});
             }
-            Farm farm = await db.Farms.FindAsync(product.FarmRefId);
             if (farm == null)
             {
                 return HttpNotFound();
@@ -82,15 +82,15 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
             return View(product);
         }
 
-        private async Task SaveChangesAndReIndex(Product product)
+        private async Task SaveChangesAndReIndex(Farm farm)
         {
             //create/delete/update a product also means we need to reindex the farm entry, hence modify the UpdateDateTime 
-            db.Entry(product.Farm).State = EntityState.Modified;
-            product.Farm.UpdateDateTime = DateTime.Now;
+            db.Entry(farm).State = EntityState.Modified;
+            farm.UpdateDateTime = DateTime.Now;
             await db.SaveChangesAsync();
 
             //db was saved successfully, inform worker role via IndexUpdatingQueue
-            QueueHelper.Send(product.Farm, EUpdateMethod.Update);
+            QueueHelper.Send(farm, EUpdateMethod.Update);
         }
 
         // GET: Farm/1/Products/Product/Edit/5
@@ -116,14 +116,15 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
         public async Task<ActionResult> Edit(
             [Bind(Include = "ProductId,FarmRefId,Name,Description,InStock")] Product product)
         {
+            Farm farm = await db.Farms.FindAsync(product.FarmRefId);
             if (ModelState.IsValid)
             {
+                product.Farm = farm;
                 db.Entry(product).State = EntityState.Modified;
-                await SaveChangesAndReIndex(product);
+                await SaveChangesAndReIndex(farm);
 
                 return RedirectToAction("Index", new {farmId = product.FarmRefId});
             }
-            Farm farm = await db.Farms.FindAsync(product.FarmRefId);
             if (farm == null)
             {
                 return HttpNotFound();
@@ -154,8 +155,7 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
         {
             Product product = await db.Products.FindAsync(id);
             db.Products.Remove(product);
-
-            await SaveChangesAndReIndex(product);
+            await SaveChangesAndReIndex(product.Farm);
             return RedirectToAction("Index", new {farmId = product.FarmRefId});
         }
 
