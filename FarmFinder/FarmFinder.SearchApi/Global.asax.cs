@@ -61,21 +61,26 @@ namespace CH.Tutteli.FarmFinder.SearchApi
                     var sequenceNumber = receivedMessage.SequenceNumber;
                     try
                     {
-                        var last = _lastNotificationDateTime.AddMinutes(1);
-                        _lastNotificationDateTime = DateTime.Now;
-                        if (last > DateTime.Now)
+                        if (_lastNotificationDateTime < DateTime.Now.AddMinutes(-1))
                         {
-                            Task.Run(() =>
+                            //check if a notification is already pending
+                            if (_lastNotificationDateTime < DateTime.Now)
                             {
-                                //wait 50 seconds until we create a new index. 
-                                //If a user is modifying something then it is likely that more things will be modified shortly
-                                //creating a new index searcher is also costly. Better wait a bit.
-                                Thread.Sleep(50*1000);
-                                Searcher = CreateIndexSearcher();
-                            });
+                                _lastNotificationDateTime = DateTime.Now.AddMinutes(1);
+                                Task.Run(() =>
+                                {
+                                    _lastNotificationDateTime = DateTime.Now;
+                                    //wait 50 seconds until we create a new index. 
+                                    //If a user is modifying something then it is likely that more things will be modified shortly
+                                    //creating a new index searcher is also costly. Better wait a bit and create then
+                                    Thread.Sleep(50*1000);
+                                    Searcher = CreateIndexSearcher();
+                                });
+                            }
                         }
                         else
                         {
+                            _lastNotificationDateTime = DateTime.Now;
                             Searcher = CreateIndexSearcher();
                         }
                     }
