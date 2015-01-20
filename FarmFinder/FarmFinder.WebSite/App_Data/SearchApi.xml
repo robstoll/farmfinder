@@ -194,17 +194,17 @@
         </member>
         <member name="P:CH.Tutteli.FarmFinder.Website.Models.Farm.Name">
             <summary>
-            Name of the farm as registered in farm finder.
+                Name of the farm as registered in farm finder.
             </summary>
         </member>
         <member name="P:CH.Tutteli.FarmFinder.Website.Models.Farm.Latitude">
             <summary>
-            Latitude of the farm using -90/90 convention.
+                Latitude of the farm using -90/90 convention.
             </summary>
         </member>
         <member name="P:CH.Tutteli.FarmFinder.Website.Models.Farm.Longitude">
             <summary>
-            Longitude of the farm using -180/180 convention.
+                Longitude of the farm using -180/180 convention.
             </summary>
         </member>
         <member name="T:CH.Tutteli.FarmFinder.Website.Areas.HelpPage.Models.HelpPageApiModel">

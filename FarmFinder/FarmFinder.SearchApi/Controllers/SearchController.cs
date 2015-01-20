@@ -15,7 +15,6 @@ namespace CH.Tutteli.FarmFinder.SearchApi.Controllers
 {
     public class SearchController : ApiController
     {
-        private readonly double EARTH_RADIUS = 6371.01;
 
         /// <summary>
         ///     Search farms around the point defined by Latitude and Longitude within the given Radius and filters the results

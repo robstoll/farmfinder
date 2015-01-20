@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -65,6 +66,7 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
         {
             if (ModelState.IsValid)
             {
+                product.UpdateDateTime = DateTime.Now;
                 db.Products.Add(product);
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index", new {farmId = product.FarmRefId});
@@ -104,6 +106,7 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
             if (ModelState.IsValid)
             {
                 db.Entry(product).State = EntityState.Modified;
+                product.UpdateDateTime = DateTime.Now;
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index", new {farmId = product.FarmRefId});
             }

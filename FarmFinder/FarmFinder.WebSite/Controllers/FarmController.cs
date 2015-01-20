@@ -51,6 +51,7 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
         {
             if (ModelState.IsValid)
             {
+                farm.UpdateDateTime = DateTime.Now;
                 db.Farms.Add(farm);
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -84,6 +85,7 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
             if (ModelState.IsValid)
             {
                 db.Entry(farm).State = EntityState.Modified;
+                farm.UpdateDateTime = DateTime.Now;
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }

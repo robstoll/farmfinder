@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CH.Tutteli.FarmFinder.Website.Models
 {
@@ -8,20 +10,20 @@ namespace CH.Tutteli.FarmFinder.Website.Models
         public int FarmId { get; set; }
 
         /// <summary>
-        /// Name of the farm as registered in farm finder.
+        ///     Name of the farm as registered in farm finder.
         /// </summary>
         [Required]
         public string Name { get; set; }
 
         /// <summary>
-        /// Latitude of the farm using -90/90 convention.
+        ///     Latitude of the farm using -90/90 convention.
         /// </summary>
         [Required]
-        [Range(-90,90)]
+        [Range(-90, 90)]
         public double Latitude { get; set; }
 
         /// <summary>
-        /// Longitude of the farm using -180/180 convention.
+        ///     Longitude of the farm using -180/180 convention.
         /// </summary>
         [Required]
         [Range(-180, 180)]
@@ -39,12 +41,29 @@ namespace CH.Tutteli.FarmFinder.Website.Models
 
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
-        
+
         [DataType(DataType.Url)]
         public string Website { get; set; }
-        
+
         [DataType(DataType.PhoneNumber)]
         public string PhoneNumber { get; set; }
+
+        [Required]
+        [DataType(DataType.DateTime)]
+        [Column(TypeName = "DateTime2")]
+        public virtual DateTime UpdateDateTime
+        {
+            get; set;
+        }
+
+        [Required]
+        [DataType(DataType.DateTime)]
+        [Column(TypeName = "DateTime2")]
+        public virtual DateTime IndexDateTime
+        {
+            get;
+            set;
+        }
 
         public virtual ICollection<Product> Products { get; set; }
 

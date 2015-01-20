@@ -147,7 +147,6 @@
       <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -175,17 +174,9 @@
     <Compile Include="Controllers\FarmController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
-    <Compile Include="Migrations\201501181230528_Initial.cs" />
-    <Compile Include="Migrations\201501181230528_Initial.Designer.cs">
-      <DependentUpon>201501181230528_Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201501181343421_AddedRequiredAttributes.cs" />
-    <Compile Include="Migrations\201501181343421_AddedRequiredAttributes.Designer.cs">
-      <DependentUpon>201501181343421_AddedRequiredAttributes.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201501191603296_Products.cs" />
-    <Compile Include="Migrations\201501191603296_Products.Designer.cs">
-      <DependentUpon>201501191603296_Products.cs</DependentUpon>
+    <Compile Include="Migrations\201501201017030_Initial.cs" />
+    <Compile Include="Migrations\201501201017030_Initial.Designer.cs">
+      <DependentUpon>201501201017030_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -274,17 +265,6 @@
     <Content Include="Views\Products\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201501181230528_Initial.resx">
-      <DependentUpon>201501181230528_Initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201501181343421_AddedRequiredAttributes.resx">
-      <DependentUpon>201501181343421_AddedRequiredAttributes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201501191603296_Products.resx">
-      <DependentUpon>201501191603296_Products.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
@@ -296,6 +276,11 @@
       <Project>{29a59187-14f7-44b0-a6df-d4e1ba7932f0}</Project>
       <Name>FarmFinder.Dtos</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201501201017030_Initial.resx">
+      <DependentUpon>201501201017030_Initial.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
