@@ -20,7 +20,7 @@ namespace CH.Tutteli.FarmFinder.Website
         {
             ServicePointManager.DefaultConnectionLimit = 12;
 
-            string connectionString = CloudConfigurationManager.GetSetting("Microsoft.ServiceBus.ConnectionString");
+            string connectionString = CloudConfigurationManager.GetSetting("ServiceBus.QueueConnectionString");
             QueueClient = QueueClient.CreateFromConnectionString(connectionString, QueueName);
         }
 

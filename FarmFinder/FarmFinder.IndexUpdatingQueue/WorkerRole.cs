@@ -28,30 +28,25 @@ namespace IndexUpdatingQueue
 
         private readonly ManualResetEvent _completedEvent = new ManualResetEvent(false);
 
-        private QueueClient _client;
+        private QueueClient _queueClient;
+        private QueueClient _topiClient;
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
         private AzureDirectory _azureDirectory;
 
-        private DateTime _lastUpdate;
+        private DateTime _lastNotification;
 
         public override void Run()
         {
             Trace.WriteLine("Starting processing of messages");
 
-            _client.OnMessage(async receivedMessage =>
+            _queueClient.OnMessage(async receivedMessage =>
                 {
                     try
                     {
-                        //todo wait between updates
-                        var last = _lastUpdate.AddMinutes(1);
-                        if(last > DateTime.Now)
-                        {
-                            Thread.Sleep((int)(last - DateTime.Now).TotalMilliseconds);
-                        }
-                        _lastUpdate = DateTime.Now;
                         var dto = receivedMessage.GetBody<UpdateIndexDto>();
                         await  HandleMessage(dto);
-                        receivedMessage.Complete();  
+                        receivedMessage.Complete();
+                        InformWebRolesAboutNewIndex();
                     }
                     catch(Exception ex)
                     {
@@ -65,6 +60,18 @@ namespace IndexUpdatingQueue
             _completedEvent.WaitOne();
         }
 
+        private void InformWebRolesAboutNewIndex()
+        {
+            //todo wait between updates
+            var last = _lastNotification.AddMinutes(1);
+            if (last > DateTime.Now)
+            {
+                Thread.Sleep((int)(last - DateTime.Now).TotalMilliseconds);
+            }
+            _lastNotification = DateTime.Now;
+
+        }
+
         private async Task HandleMessage(UpdateIndexDto dto)
         {
             using (var indexWriter = CreateIndexWriter())
@@ -76,22 +83,23 @@ namespace IndexUpdatingQueue
                         farm = await _db.Farms.Include(f => f.Products).Where(f => f.FarmId == dto.FarmId).FirstAsync();
                         if (farm != null && farm.UpdateDateTime == dto.UpdateTime)
                         {
-                            AddDocToIndex(farm, indexWriter);
+                            AddFarmToIndex(farm, indexWriter);
+                            await _db.SaveChangesAsync();
                         }
                         break;
                     case EUpdateMethod.Update:
                         farm = await _db.Farms.Include(f => f.Products).Where(f => f.FarmId == dto.FarmId).FirstAsync();
                         if (farm != null && farm.UpdateDateTime == dto.UpdateTime)
                         {
-                            ModifyDocInIndex(farm, indexWriter);
+                            UpdateFarmInIndex(farm, indexWriter);
+                            await _db.SaveChangesAsync();
                         }
                         break;
                     case EUpdateMethod.Delete:
                         farm = await _db.Farms.FindAsync(dto.FarmId);
                         if (farm != null)
                         {
-                            indexWriter.DeleteDocuments(new Term("id", dto.FarmId.ToString()));
-                            _db.Farms.Remove(farm);
+                            DeleteFarmFromIndex(farm, indexWriter);
                             await _db.SaveChangesAsync();
                         }
                         break;
@@ -104,8 +112,11 @@ namespace IndexUpdatingQueue
             // Set the maximum number of concurrent connections 
             ServicePointManager.DefaultConnectionLimit = 12;
 
-            string connectionString = CloudConfigurationManager.GetSetting("Microsoft.ServiceBus.ConnectionString");
-            _client = QueueClient.CreateFromConnectionString(connectionString, QueueName);
+            string connectionString = CloudConfigurationManager.GetSetting("ServiceBus.QueueConnectionString");
+            _queueClient = QueueClient.CreateFromConnectionString(connectionString, QueueName);
+
+            connectionString = CloudConfigurationManager.GetSetting("ServiceBus.TopicConnectionString");
+            _topiClient = QueueClient.CreateFromConnectionString(connectionString, QueueName);
 
             Task.Run(async () => await InitialiseAzureDirectory()).Wait();
 
@@ -142,7 +153,7 @@ namespace IndexUpdatingQueue
                 {
                     try
                     {
-                        AddDocToIndex(farm, indexWriter);
+                        AddFarmToIndex(farm, indexWriter);
                     }
                     catch (Exception e)
                     {
@@ -155,7 +166,7 @@ namespace IndexUpdatingQueue
                 {
                     try
                     {
-                        ModifyDocInIndex(farm, indexWriter);
+                        UpdateFarmInIndex(farm, indexWriter);
                     }
                     catch (Exception e)
                     {
@@ -168,7 +179,7 @@ namespace IndexUpdatingQueue
                 {
                     try
                     {
-                        DeleteDocFromIndex(indexWriter, farm);
+                        DeleteFarmFromIndex(farm, indexWriter);
                     }
                     catch (Exception e)
                     {
@@ -181,7 +192,7 @@ namespace IndexUpdatingQueue
 
             await _db.SaveChangesAsync();
         }
-        private void AddDocToIndex(Farm farm, IndexWriter indexWriter)
+        private void AddFarmToIndex(Farm farm, IndexWriter indexWriter)
         {
             var doc = CreateDocumentFromFarm(farm);
             indexWriter.AddDocument(doc);
@@ -190,14 +201,14 @@ namespace IndexUpdatingQueue
         }
 
 
-        private void ModifyDocInIndex(Farm farm, IndexWriter indexWriter)
+        private void UpdateFarmInIndex(Farm farm, IndexWriter indexWriter)
         {
             var doc = CreateDocumentFromFarm(farm);
             indexWriter.UpdateDocument(new Term("id", farm.FarmId.ToString()), doc);
             farm.IndexDateTime = DateTime.Now;
         }
 
-        private void DeleteDocFromIndex(IndexWriter indexWriter, Farm farm)
+        private void DeleteFarmFromIndex(Farm farm, IndexWriter indexWriter)
         {
             indexWriter.DeleteDocuments(new Term("id", farm.FarmId.ToString()));
             _db.Farms.Remove(farm);
@@ -212,7 +223,7 @@ namespace IndexUpdatingQueue
                 {
                     try
                     {
-                        AddDocToIndex(farm, indexWriter);
+                        AddFarmToIndex(farm, indexWriter);
                     }
                     catch (Exception e)
                     {
@@ -266,9 +277,9 @@ namespace IndexUpdatingQueue
 
         public override void OnStop()
         {
-            if (_client != null)
+            if (_queueClient != null)
             {
-                _client.Close();
+                _queueClient.Close();
             }
             if (_azureDirectory != null)
             {
