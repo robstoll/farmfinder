@@ -9,10 +9,25 @@
 <div class="withBorder">
     <p>The current version is a prototype which includes</p>
     <ul>
-        <li>Search for farms by location and optionally by query parameters</li>
-        <li>Add new farms</li>
-        <li>Modify existing farms</li>
-        <li>Delete existing farms</li>
+        <li>A search API
+            <ul>
+                <li>Search for farms by location and optionally by query parameters.</li>
+                <li>Based on Web API (REST API which supports JSONP).</li>
+                <li>Uses lucence.NET as search engine and makes use of subscriptions to get notified about index changes.</li>
+            </ul>
+        </li>
+        <li>A backend (this website)
+            <ul>
+                <li>CRUD for farms and products.</li>
+                <li>Uses queues to inform worker role about changes in the database.</li>
+            </ul>
+        </li>
+        <li>A worker role
+            <ul>
+                <li>Which creates and maintains the lucene index (incrementally).</li>
+                <li>Makes use of topics to inform the web roles (the search API) about an index change.</li>        
+            </ul>
+        </li>
     </ul>
 </div>
 <div class="row">

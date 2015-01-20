@@ -61,7 +61,7 @@ namespace CH.Tutteli.FarmFinder.SearchApi
                     var sequenceNumber = receivedMessage.SequenceNumber;
                     try
                     {
-                        if (_lastNotificationDateTime < DateTime.Now.AddMinutes(-1))
+                        if (_lastNotificationDateTime >= DateTime.Now.AddMinutes(-1))
                         {
                             //check if a notification is already pending
                             if (_lastNotificationDateTime < DateTime.Now)
