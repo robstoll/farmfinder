@@ -109,6 +109,12 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FarmFinder.Dtos\FarmFinder.Dtos.csproj">
+      <Project>{29a59187-14f7-44b0-a6df-d4e1ba7932f0}</Project>
+      <Name>FarmFinder.Dtos</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

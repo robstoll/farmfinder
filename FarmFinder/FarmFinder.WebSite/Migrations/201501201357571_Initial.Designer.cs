@@ -13,7 +13,7 @@ namespace CH.Tutteli.FarmFinder.Website.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201501201017030_Initial"; }
+            get { return "201501201357571_Initial"; }
         }
         
         string IMigrationMetadata.Source

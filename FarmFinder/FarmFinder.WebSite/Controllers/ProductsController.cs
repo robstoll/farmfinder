@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using CH.Tutteli.FarmFinder.Dtos;
 using CH.Tutteli.FarmFinder.Website.Models;
 
 namespace CH.Tutteli.FarmFinder.Website.Controllers
@@ -66,9 +67,9 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
         {
             if (ModelState.IsValid)
             {
-                product.UpdateDateTime = DateTime.Now;
                 db.Products.Add(product);
-                await db.SaveChangesAsync();
+                await SaveChangesAndReIndex(product);
+
                 return RedirectToAction("Index", new {farmId = product.FarmRefId});
             }
             Farm farm = await db.Farms.FindAsync(product.FarmRefId);
@@ -78,6 +79,22 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
             }
             product.Farm = farm;
             return View(product);
+        }
+
+        private async Task SaveChangesAndReIndex(Product product)
+        {
+            //create/delete/update a product also means we need to reindex the farm entry, hence modify the UpdateDateTime 
+            db.Entry(product.Farm).State = EntityState.Modified;
+            product.Farm.UpdateDateTime = DateTime.Now;
+            await db.SaveChangesAsync();
+
+            //db was saved successfully, inform worker role via IndexUpdatingQueue
+            InformWorkerRoleToReIndex(new UpdateIndexDto {FarmId = product.FarmRefId, UpdateMethod = EUpdateMethod.Update});
+        }
+
+        private void InformWorkerRoleToReIndex(UpdateIndexDto updateIndexDto)
+        {
+            //TODO use queue and inform worker
         }
 
         // GET: Farm/1/Products/Product/Edit/5
@@ -106,8 +123,8 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
             if (ModelState.IsValid)
             {
                 db.Entry(product).State = EntityState.Modified;
-                product.UpdateDateTime = DateTime.Now;
-                await db.SaveChangesAsync();
+                await SaveChangesAndReIndex(product);
+
                 return RedirectToAction("Index", new {farmId = product.FarmRefId});
             }
             Farm farm = await db.Farms.FindAsync(product.FarmRefId);
@@ -141,7 +158,8 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
         {
             Product product = await db.Products.FindAsync(id);
             db.Products.Remove(product);
-            await db.SaveChangesAsync();
+
+            await SaveChangesAndReIndex(product);
             return RedirectToAction("Index", new {farmId = product.FarmRefId});
         }
 

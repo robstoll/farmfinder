@@ -174,9 +174,9 @@
     <Compile Include="Controllers\FarmController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
-    <Compile Include="Migrations\201501201017030_Initial.cs" />
-    <Compile Include="Migrations\201501201017030_Initial.Designer.cs">
-      <DependentUpon>201501201017030_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\201501201357571_Initial.cs" />
+    <Compile Include="Migrations\201501201357571_Initial.Designer.cs">
+      <DependentUpon>201501201357571_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -278,8 +278,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201501201017030_Initial.resx">
-      <DependentUpon>201501201017030_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201501201357571_Initial.resx">
+      <DependentUpon>201501201357571_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

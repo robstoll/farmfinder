@@ -19,22 +19,8 @@ namespace CH.Tutteli.FarmFinder.Website.Models
 
         public string Description { get; set; }
 
-        [Required]
-        [DataType(DataType.DateTime)]
-        [Column(TypeName = "DateTime2")]
-        public virtual DateTime UpdateDateTime { get; set; }
-
-
-        [Required]
-        [DataType(DataType.DateTime)]
-        [Column(TypeName = "DateTime2")]
-        public virtual DateTime IndexDateTime
-        {
-            get;
-            set;
-        }
-
         [ForeignKey("FarmRefId")]
         public virtual Farm Farm { get; set; }
+
     }
 }

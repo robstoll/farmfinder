@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
+using CH.Tutteli.FarmFinder.Dtos;
 using CH.Tutteli.FarmFinder.Website.Models;
 
 namespace CH.Tutteli.FarmFinder.Website.Controllers
@@ -52,12 +49,20 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
             if (ModelState.IsValid)
             {
                 farm.UpdateDateTime = DateTime.Now;
-                db.Farms.Add(farm);
+                farm = db.Farms.Add(farm);
                 await db.SaveChangesAsync();
+
+                InformWorkerRoleToReIndex(new UpdateIndexDto { FarmId = farm.FarmId, UpdateMethod = EUpdateMethod.Create });
+
                 return RedirectToAction("Index");
             }
 
             return View(farm);
+        }
+
+        private void InformWorkerRoleToReIndex(UpdateIndexDto updateIndexDto)
+        {
+            
         }
 
         // GET: Farm/Edit/5
@@ -87,6 +92,9 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
                 db.Entry(farm).State = EntityState.Modified;
                 farm.UpdateDateTime = DateTime.Now;
                 await db.SaveChangesAsync();
+
+                InformWorkerRoleToReIndex(new UpdateIndexDto { FarmId = farm.FarmId, UpdateMethod = EUpdateMethod.Update });
+
                 return RedirectToAction("Index");
             }
             return View(farm);
@@ -113,8 +121,12 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
             Farm farm = await db.Farms.FindAsync(id);
-            db.Farms.Remove(farm);
+            farm.DeleteWhenRemovedFromIndex = true;
+            db.Entry(farm).State = EntityState.Modified;
             await db.SaveChangesAsync();
+
+            InformWorkerRoleToReIndex(new UpdateIndexDto { FarmId = farm.FarmId, UpdateMethod = EUpdateMethod.Delete });
+
             return RedirectToAction("Index");
         }
 

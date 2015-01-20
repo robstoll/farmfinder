@@ -23,6 +23,7 @@ namespace CH.Tutteli.FarmFinder.Website.Migrations
                         PhoneNumber = c.String(),
                         UpdateDateTime = c.DateTime(nullable: false, precision: 7, storeType: "datetime2"),
                         IndexDateTime = c.DateTime(nullable: false, precision: 7, storeType: "datetime2"),
+                        DeleteWhenRemovedFromIndex = c.Boolean(nullable: false),
                     })
                 .PrimaryKey(t => t.FarmId);
             
@@ -35,8 +36,6 @@ namespace CH.Tutteli.FarmFinder.Website.Migrations
                         FarmRefId = c.Int(nullable: false),
                         Name = c.String(nullable: false),
                         Description = c.String(),
-                        UpdateDateTime = c.DateTime(nullable: false, precision: 7, storeType: "datetime2"),
-                        IndexDateTime = c.DateTime(nullable: false, precision: 7, storeType: "datetime2"),
                     })
                 .PrimaryKey(t => t.ProductId)
                 .ForeignKey("dbo.Farms", t => t.FarmRefId, cascadeDelete: true)
