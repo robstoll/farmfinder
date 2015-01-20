@@ -1,15 +1,14 @@
+using System.Net;
+using System.Threading;
+using Microsoft.ServiceBus.Messaging;
+using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.ServiceRuntime;
 
 namespace CH.Tutteli.FarmFinder.Website
 {
     public class WebRole : RoleEntryPoint
     {
-        public override bool OnStart()
-        {
-            // For information on handling configuration changes
-            // see the MSDN topic at http://go.microsoft.com/fwlink/?LinkId=166357.
-
-            return base.OnStart();
-        }
+        
+       
     }
 }

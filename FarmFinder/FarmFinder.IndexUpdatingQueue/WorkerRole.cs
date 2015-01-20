@@ -29,10 +29,9 @@ namespace IndexUpdatingQueue
         private readonly ManualResetEvent _completedEvent = new ManualResetEvent(false);
 
         private QueueClient _client;
-        private ApplicationDbContext _db = new ApplicationDbContext();
+        private readonly ApplicationDbContext _db = new ApplicationDbContext();
         private AzureDirectory _azureDirectory;
 
-        private object _lockObject = new Object();
         private DateTime _lastUpdate;
 
         public override void Run()
@@ -49,13 +48,15 @@ namespace IndexUpdatingQueue
                         {
                             Thread.Sleep((int)(last - DateTime.Now).TotalMilliseconds);
                         }
-
-                        HandleMessage(receivedMessage.GetBody<UpdateIndexDto>());
+                        _lastUpdate = DateTime.Now;
+                        var dto = receivedMessage.GetBody<UpdateIndexDto>();
+                        HandleMessage(dto);
                     }
-                    catch
+                    catch(Exception ex)
                     {
-                        //TODO error handling
-                        // Handle any message processing specific exceptions here
+                        //no idea why it does not work but well, log it and abandon the message
+                        Trace.TraceWarning("Exception occurred during the read of message '" + receivedMessage.SequenceNumber + "': " + ex.Message);
+                        receivedMessage.Abandon(); 
                     }
                 });
 
@@ -71,17 +72,26 @@ namespace IndexUpdatingQueue
                 {
                     case EUpdateMethod.Create:
                         farm = await _db.Farms.Include(f => f.Products).Where(f => f.FarmId == dto.FarmId).FirstAsync();
-                        indexWriter.AddDocument(CreateDocumentFromFarm(farm));
+                        if (farm != null)
+                        {
+                            indexWriter.AddDocument(CreateDocumentFromFarm(farm));
+                        }
                         break;
                     case EUpdateMethod.Update:
                         farm = await _db.Farms.Include(f => f.Products).Where(f => f.FarmId == dto.FarmId).FirstAsync();
-                        indexWriter.UpdateDocument(new Term("id",dto.FarmId.ToString()), CreateDocumentFromFarm(farm));
+                        if (farm != null)
+                        {
+                            indexWriter.UpdateDocument(new Term("id", dto.FarmId.ToString()), CreateDocumentFromFarm(farm));
+                        }
                         break;
                     case EUpdateMethod.Delete:
-                        indexWriter.DeleteDocuments(new Term("id",dto.FarmId.ToString()));
                         farm = await _db.Farms.FindAsync(dto.FarmId);
-                        _db.Farms.Remove(farm);
-                        await _db.SaveChangesAsync();
+                        if (farm != null)
+                        {
+                            indexWriter.DeleteDocuments(new Term("id", dto.FarmId.ToString()));
+                            _db.Farms.Remove(farm);
+                            await _db.SaveChangesAsync();
+                        }
                         break;
                 }
             }
@@ -254,7 +264,5 @@ namespace IndexUpdatingQueue
             _completedEvent.Set();
             base.OnStop();
         }
-
-       
     }
 }

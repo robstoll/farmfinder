@@ -5,6 +5,7 @@ using System.Net;
 using System.Web.Mvc;
 using CH.Tutteli.FarmFinder.Dtos;
 using CH.Tutteli.FarmFinder.Website.Models;
+using Microsoft.ServiceBus.Messaging;
 
 namespace CH.Tutteli.FarmFinder.Website.Controllers
 {
@@ -62,7 +63,7 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
 
         private void InformWorkerRoleToReIndex(UpdateIndexDto updateIndexDto)
         {
-            
+            WebApiApplication.QueueClient.Send(new BrokeredMessage(updateIndexDto));
         }
 
         // GET: Farm/Edit/5
