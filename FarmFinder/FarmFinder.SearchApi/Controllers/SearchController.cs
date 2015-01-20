@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -7,10 +6,10 @@ using System.Web.Http.Description;
 using CH.Tutteli.FarmFinder.Dtos;
 using LonelySharp;
 using Lucene.Net.Analysis.Standard;
-using Lucene.Net.Index;
+using Lucene.Net.Documents;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
-using Version = Lucene.Net.Util.Version;
+using Lucene.Net.Util;
 
 namespace CH.Tutteli.FarmFinder.SearchApi.Controllers
 {
@@ -19,7 +18,8 @@ namespace CH.Tutteli.FarmFinder.SearchApi.Controllers
         private readonly double EARTH_RADIUS = 6371.01;
 
         /// <summary>
-        /// Search farms around the point defined by Latitude and Longitude within the given Radius and filters the results according to the additional query parameters.
+        ///     Search farms around the point defined by Latitude and Longitude within the given Radius and filters the results
+        ///     according to the additional query parameters.
         /// </summary>
         /// <param name="queryDto"></param>
         /// <returns>The search results</returns>
@@ -31,8 +31,8 @@ namespace CH.Tutteli.FarmFinder.SearchApi.Controllers
                 try
                 {
                     var searcher = new IndexSearcher(WebApiApplication.AzureDirectory);
-                    var hits = Query(queryDto, searcher);
-                    var result = ConvertHitsToFarmLocationDtos(hits, searcher);
+                    ScoreDoc[] hits = Query(queryDto, searcher);
+                    List<FarmLocationDto> result = ConvertHitsToFarmLocationDtos(hits, searcher);
                     return Request.CreateResponse(HttpStatusCode.OK, result);
                 }
                 catch (ParseException ex)
@@ -48,7 +48,7 @@ namespace CH.Tutteli.FarmFinder.SearchApi.Controllers
             var result = new List<FarmLocationDto>();
             for (int i = 0; i < hits.Length; ++i)
             {
-                var doc = searcher.Doc(hits[i].Doc);
+                Document doc = searcher.Doc(hits[i].Doc);
 
                 double lat;
                 double lng;
@@ -67,15 +67,16 @@ namespace CH.Tutteli.FarmFinder.SearchApi.Controllers
 
         private static ScoreDoc[] Query(QueryDto queryDto, IndexSearcher searcher)
         {
-            var geoLocation = GeoLocation.FromDegrees(queryDto.Latitude, queryDto.Longitude);
-            var bounds = geoLocation.BoundingCoordinates(queryDto.Radius);
-            var latFrom = bounds[0].getLatitudeInDegrees();
-            var latTo = bounds[1].getLatitudeInDegrees();
-            var lngFrom = bounds[0].getLongitudeInDegrees();
-            var lngTo = bounds[1].getLongitudeInDegrees();
-            var latQuery = NumericRangeQuery.NewDoubleRange("latitude", latFrom, latTo, true, true);
+            GeoLocation geoLocation = GeoLocation.FromDegrees(queryDto.Latitude, queryDto.Longitude);
+            GeoLocation[] bounds = geoLocation.BoundingCoordinates(queryDto.Radius);
+            double latFrom = bounds[0].getLatitudeInDegrees();
+            double latTo = bounds[1].getLatitudeInDegrees();
+            double lngFrom = bounds[0].getLongitudeInDegrees();
+            double lngTo = bounds[1].getLongitudeInDegrees();
+            NumericRangeQuery<double> latQuery = NumericRangeQuery.NewDoubleRange("latitude", latFrom, latTo, true, true);
             latQuery.Boost = 1.5f;
-            var lngQuery = NumericRangeQuery.NewDoubleRange("longitude", lngFrom, lngTo, true, true);
+            NumericRangeQuery<double> lngQuery = NumericRangeQuery.NewDoubleRange("longitude", lngFrom, lngTo, true,
+                true);
             lngQuery.Boost = 1.5f;
             var query = new BooleanQuery
             {
@@ -87,13 +88,28 @@ namespace CH.Tutteli.FarmFinder.SearchApi.Controllers
                 var standardAnalyzer = new StandardAnalyzer(Version.LUCENE_30);
                 var innerQuery = new BooleanQuery
                 {
-                    {new QueryParser(Version.LUCENE_30, "product_name", standardAnalyzer).Parse(queryDto.Query), Occur.SHOULD},
-                    {new QueryParser(Version.LUCENE_30, "product_description", standardAnalyzer).Parse(queryDto.Query), Occur.SHOULD},
+                    {
+                        new QueryParser(Version.LUCENE_30, "product_name", standardAnalyzer).Parse(queryDto.Query),
+                        Occur.SHOULD
+                    },
+                    {
+                        new QueryParser(Version.LUCENE_30, "product_description", standardAnalyzer).Parse(queryDto.Query),
+                        Occur.SHOULD
+                    },
                 };
+                if (!queryDto.Query.Contains("~"))
+                {
+                    Query q = new QueryParser(Version.LUCENE_30, "product_name", standardAnalyzer).Parse(queryDto.Query + "~");
+                    q.Boost = 0.75f;
+                    innerQuery.Add(q, Occur.SHOULD);
+                    Query q2 = new QueryParser(Version.LUCENE_30, "product_description", standardAnalyzer).Parse(queryDto.Query + "~");
+                    q2.Boost = 0.75f;
+                    innerQuery.Add(q2, Occur.SHOULD);
+                }
                 query.Add(innerQuery, Occur.MUST);
             }
-            var topDocs = searcher.Search(query, 100);
-            var hits = topDocs.ScoreDocs;
+            TopDocs topDocs = searcher.Search(query, 100);
+            ScoreDoc[] hits = topDocs.ScoreDocs;
             return hits;
         }
     }
