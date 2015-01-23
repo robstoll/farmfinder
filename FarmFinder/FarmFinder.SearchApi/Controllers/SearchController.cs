@@ -6,10 +6,10 @@ using System.Web.Http.Description;
 using CH.Tutteli.FarmFinder.Dtos;
 using LonelySharp;
 using Lucene.Net.Analysis.Standard;
-using Lucene.Net.Documents;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using Lucene.Net.Util;
+using Microsoft.WindowsAzure.Storage;
 
 namespace CH.Tutteli.FarmFinder.SearchApi.Controllers
 {
@@ -29,7 +29,17 @@ namespace CH.Tutteli.FarmFinder.SearchApi.Controllers
             {
                 try
                 {
-                    ScoreDoc[] hits = Query(queryDto);
+                    ScoreDoc[] hits;
+                    try
+                    {
+                       hits = Query(queryDto);
+                    }
+                    catch (StorageException)
+                    {
+                        //AzureDirectory had an error, recreate indexer and try again
+                        
+                        hits = Query(queryDto);
+                    }
                     List<FarmLocationDto> result = ConvertHitsToFarmLocationDtos(hits);
                     return Request.CreateResponse(HttpStatusCode.OK, result);
                 }

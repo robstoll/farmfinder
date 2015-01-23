@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Data.Entity;
 using System.Threading.Tasks;
 using System.Net;
 using System.Web.Mvc;
 using CH.Tutteli.FarmFinder.Dtos;
 using CH.Tutteli.FarmFinder.Website.Models;
-using Microsoft.ServiceBus.Messaging;
 
 namespace CH.Tutteli.FarmFinder.Website.Controllers
 {
@@ -16,7 +16,7 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
         // GET: Farm
         public async Task<ActionResult> Index()
         {
-            return View(await db.Farms.ToListAsync());
+            return View(await db.Farms.Where(f => f.DeleteWhenRemovedFromIndex == false).ToListAsync());
         }
 
         // GET: Farm/Details/5

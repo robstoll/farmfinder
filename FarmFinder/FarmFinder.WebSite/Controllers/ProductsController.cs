@@ -153,9 +153,10 @@ namespace CH.Tutteli.FarmFinder.Website.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            Product product = await db.Products.FindAsync(id);
+            Product product = await db.Products.Include(p => p.Farm).Where(p => p.ProductId == id).FirstAsync();
+            var farm = product.Farm;
             db.Products.Remove(product);
-            await SaveChangesAndReIndex(product.Farm);
+            await SaveChangesAndReIndex(farm);
             return RedirectToAction("Index", new {farmId = product.FarmRefId});
         }
 

@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
 using Lucene.Net.Search;
+using Lucene.Net.Store;
 using Lucene.Net.Store.Azure;
 using Microsoft.ServiceBus.Messaging;
 using Microsoft.WindowsAzure;
@@ -20,7 +21,6 @@ namespace CH.Tutteli.FarmFinder.SearchApi
 
         public static IndexSearcher Searcher { get; set; }
 
-        private AzureDirectory _azureDirectory;
         private SubscriptionClient _topicClient;
         private readonly ManualResetEvent _completedEvent = new ManualResetEvent(false);
 
@@ -38,12 +38,13 @@ namespace CH.Tutteli.FarmFinder.SearchApi
             InitialiseTopic();
         }
 
-        private IndexSearcher CreateIndexSearcher()
+        private static IndexSearcher CreateIndexSearcher()
         {
             CloudStorageAccount cloudStorageAccount;
             CloudStorageAccount.TryParse(CloudConfigurationManager.GetSetting("blobStorage"), out cloudStorageAccount);
-            _azureDirectory = new AzureDirectory(cloudStorageAccount, "FarmCatalog");
-            return new IndexSearcher(_azureDirectory);
+            //TODO try to use the RAM
+            //var cacheDirectory = new RAMDirectory();
+            return new IndexSearcher(new AzureDirectory(cloudStorageAccount, "FarmCatalog"), true);
         }
 
         public void InitialiseTopic()
@@ -61,28 +62,28 @@ namespace CH.Tutteli.FarmFinder.SearchApi
                     var sequenceNumber = receivedMessage.SequenceNumber;
                     try
                     {
-                        if (_lastNotificationDateTime >= DateTime.Now.AddMinutes(-1))
-                        {
-                            //check if a notification is already pending
-                            if (_lastNotificationDateTime < DateTime.Now)
-                            {
-                                _lastNotificationDateTime = DateTime.Now.AddMinutes(1);
-                                Task.Run(() =>
-                                {
-                                    _lastNotificationDateTime = DateTime.Now;
-                                    //wait 50 seconds until we create a new index. 
-                                    //If a user is modifying something then it is likely that more things will be modified shortly
-                                    //creating a new index searcher is also costly. Better wait a bit and create then
-                                    Thread.Sleep(50*1000);
-                                    Searcher = CreateIndexSearcher();
-                                });
-                            }
-                        }
-                        else
-                        {
+                        //if (_lastNotificationDateTime >= DateTime.Now.AddMinutes(-1))
+                        //{
+                        //    //check if a notification is already pending
+                        //    if (_lastNotificationDateTime < DateTime.Now)
+                        //    {
+                        //        _lastNotificationDateTime = DateTime.Now.AddMinutes(1);
+                        //        Task.Run(() =>
+                        //        {
+                        //            _lastNotificationDateTime = DateTime.Now;
+                        //            //wait 50 seconds until we create a new index. 
+                        //            //If a user is modifying something then it is likely that more things will be modified shortly
+                        //            //creating a new index searcher is also costly. Better wait a bit and create then
+                        //            Thread.Sleep(50*1000);
+                        //            ReCreateSearcher();
+                        //        });
+                        //    }
+                        //}
+                        //else
+                        //{
                             _lastNotificationDateTime = DateTime.Now;
-                            Searcher = CreateIndexSearcher();
-                        }
+                            ReCreateSearcher();
+                        //}
                     }
                     catch (Exception ex)
                     {
@@ -96,6 +97,15 @@ namespace CH.Tutteli.FarmFinder.SearchApi
                 _completedEvent.WaitOne();
             });
             
+        }
+
+        public static void ReCreateSearcher()
+        {
+            //if (Searcher != null)
+            //{
+            //    Searcher.Dispose();
+            //}
+            Searcher = CreateIndexSearcher();
         }
 
         protected void Application_End()

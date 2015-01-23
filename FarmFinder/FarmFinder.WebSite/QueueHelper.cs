@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Web;
+﻿using System.Net;
 using CH.Tutteli.FarmFinder.Dtos;
 using CH.Tutteli.FarmFinder.Website.Models;
 using Microsoft.ServiceBus.Messaging;
@@ -37,7 +33,7 @@ namespace CH.Tutteli.FarmFinder.Website
             var dto = new UpdateIndexDto
             {
                 FarmId = farm.FarmId,
-                UpdateTime = farm.UpdateDateTime,
+//                UpdateTime = farm.UpdateDateTime,
                 UpdateMethod = updateMethod
             };
             QueueClient.Send(new BrokeredMessage(dto));

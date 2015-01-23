@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarmFinder.WebSite", "FarmF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarmFinder.IndexUpdatingQueue", "FarmFinder.IndexUpdatingQueue\FarmFinder.IndexUpdatingQueue.csproj", "{F2588D87-7035-45EB-ABA5-D051AEA79124}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarmFinder.DL", "FarmFinder.DL\FarmFinder.DL.csproj", "{897E8CF6-930A-4ABB-8FD4-D2C02F2F15CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{F2588D87-7035-45EB-ABA5-D051AEA79124}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2588D87-7035-45EB-ABA5-D051AEA79124}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2588D87-7035-45EB-ABA5-D051AEA79124}.Release|Any CPU.Build.0 = Release|Any CPU
+		{897E8CF6-930A-4ABB-8FD4-D2C02F2F15CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{897E8CF6-930A-4ABB-8FD4-D2C02F2F15CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{897E8CF6-930A-4ABB-8FD4-D2C02F2F15CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{897E8CF6-930A-4ABB-8FD4-D2C02F2F15CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

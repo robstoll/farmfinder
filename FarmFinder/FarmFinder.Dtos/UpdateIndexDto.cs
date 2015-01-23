@@ -8,6 +8,6 @@ namespace CH.Tutteli.FarmFinder.Dtos
 
         public EUpdateMethod UpdateMethod { get; set; }
 
-        public DateTime UpdateTime { get; set; }
+//        public DateTime UpdateTime { get; set; }
     }
 }
