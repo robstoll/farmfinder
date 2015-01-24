@@ -37,21 +37,11 @@
     <ServiceConfiguration Include="ServiceConfiguration.Cloud.cscfg" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="FarmFinder.IndexUpdatingQueueContent" />
+    <Folder Include="FarmFinder.IndexUpdatingWorkerContent" />
     <Folder Include="Profiles" />
   </ItemGroup>
   <ItemGroup>
-    <DiagnosticsConfiguration Include="FarmFinder.IndexUpdatingQueueContent\diagnostics.wadcfgx" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FarmFinder.IndexUpdatingQueue\FarmFinder.IndexUpdatingQueue.csproj">
-      <Name>FarmFinder.IndexUpdatingQueue</Name>
-      <Project>{f2588d87-7035-45eb-aba5-d051aea79124}</Project>
-      <Private>True</Private>
-      <RoleType>Worker</RoleType>
-      <RoleName>FarmFinder.IndexUpdatingQueue</RoleName>
-      <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
-    </ProjectReference>
+    <DiagnosticsConfiguration Include="FarmFinder.IndexUpdatingWorkerContent\diagnostics.wadcfgx" />
   </ItemGroup>
   <ItemGroup>
     <PublishProfile Include="Profiles\FarmFinderProduction.azurePubxml" />

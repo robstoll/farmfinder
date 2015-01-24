@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ServiceDefinition name="FarmFinder" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2014-06.2.4">
-  <WorkerRole name="FarmFinder.IndexUpdatingQueue" vmsize="Small">
+  <WorkerRole name="FarmFinder.IndexUpdatingWorker" vmsize="Small">
     <ConfigurationSettings>
       <Setting name="ServiceBus.QueueConnectionString" />
       <Setting name="ServiceBus.TopicConnectionString" />

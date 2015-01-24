@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ServiceConfiguration serviceName="FarmFinder" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="4" osVersion="*" schemaVersion="2014-06.2.4">
-  <Role name="FarmFinder.IndexUpdatingQueue">
+  <Role name="FarmFinder.IndexUpdatingWorker">
     <Instances count="1" />
     <ConfigurationSettings>
       <Setting name="ServiceBus.QueueConnectionString" value="Endpoint=sb://farmfinder.servicebus.windows.net/;SharedAccessKeyName=farmfinder_backend;SharedAccessKey=4AzE5SBVi8wWbI5ssCaUilR/Jz5GPcNE14vzxtm5TuA=" />
