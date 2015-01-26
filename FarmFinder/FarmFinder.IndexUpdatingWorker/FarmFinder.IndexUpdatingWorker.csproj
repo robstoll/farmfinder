@@ -93,6 +93,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\FarmFinder.SearchApi\ThrottlingCall.cs">
+      <Link>ThrottlingCall.cs</Link>
+    </Compile>
     <Compile Include="..\FarmFinder.WebSite\Models\ApplicationDbContext.cs">
       <Link>Models\ApplicationDbContext.cs</Link>
     </Compile>

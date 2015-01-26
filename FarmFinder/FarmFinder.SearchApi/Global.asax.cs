@@ -23,8 +23,7 @@ namespace CH.Tutteli.FarmFinder.SearchApi
 
         private SubscriptionClient _topicClient;
         private readonly ManualResetEvent _completedEvent = new ManualResetEvent(false);
-
-        private DateTime _lastNotificationDateTime;
+        private readonly ThrottlingCall _throttling = new ThrottlingCall(TimeSpan.FromMinutes(1));
 
         protected void Application_Start()
         {
@@ -33,18 +32,19 @@ namespace CH.Tutteli.FarmFinder.SearchApi
             GlobalConfiguration.Configuration.AddJsonpFormatter();
 
             Searcher = CreateIndexSearcher();
-            _lastNotificationDateTime = DateTime.Now;
+            //set DateTime - otherwise index will be updated immediatly even when minTimeBetweenCalls is not yet exceeded
+            _throttling.LastTimeExecuteWasCalled = DateTime.Now;
 
             InitialiseTopic();
         }
 
-        private static IndexSearcher CreateIndexSearcher()
+        private IndexSearcher CreateIndexSearcher()
         {
             CloudStorageAccount cloudStorageAccount;
             CloudStorageAccount.TryParse(CloudConfigurationManager.GetSetting("blobStorage"), out cloudStorageAccount);
-            //TODO try to use the RAM
-            //var cacheDirectory = new RAMDirectory();
-            return new IndexSearcher(new AzureDirectory(cloudStorageAccount, "FarmCatalog"), true);
+            var cacheDirectory = new RAMDirectory();
+            var azureDirectory = new AzureDirectory(cloudStorageAccount, "FarmCatalog", cacheDirectory);
+            return new IndexSearcher(azureDirectory, true);
         }
 
         public void InitialiseTopic()
@@ -57,33 +57,12 @@ namespace CH.Tutteli.FarmFinder.SearchApi
             
             Task.Run(() =>
             {
-                _topicClient.OnMessage(receivedMessage =>
+                _topicClient.OnMessage(async receivedMessage =>
                 {
                     var sequenceNumber = receivedMessage.SequenceNumber;
                     try
                     {
-                        //if (_lastNotificationDateTime >= DateTime.Now.AddMinutes(-1))
-                        //{
-                        //    //check if a notification is already pending
-                        //    if (_lastNotificationDateTime < DateTime.Now)
-                        //    {
-                        //        _lastNotificationDateTime = DateTime.Now.AddMinutes(1);
-                        //        Task.Run(() =>
-                        //        {
-                        //            _lastNotificationDateTime = DateTime.Now;
-                        //            //wait 50 seconds until we create a new index. 
-                        //            //If a user is modifying something then it is likely that more things will be modified shortly
-                        //            //creating a new index searcher is also costly. Better wait a bit and create then
-                        //            Thread.Sleep(50*1000);
-                        //            ReCreateSearcher();
-                        //        });
-                        //    }
-                        //}
-                        //else
-                        //{
-                            _lastNotificationDateTime = DateTime.Now;
-                            ReCreateSearcher();
-                        //}
+                        await _throttling.Execute(async () => ReCreateSearcher());
                     }
                     catch (Exception ex)
                     {
@@ -99,12 +78,8 @@ namespace CH.Tutteli.FarmFinder.SearchApi
             
         }
 
-        public static void ReCreateSearcher()
+        private void ReCreateSearcher()
         {
-            //if (Searcher != null)
-            //{
-            //    Searcher.Dispose();
-            //}
             Searcher = CreateIndexSearcher();
         }
 

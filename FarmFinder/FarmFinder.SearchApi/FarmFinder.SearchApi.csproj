@@ -185,6 +185,7 @@
     </Compile>
     <Compile Include="Helpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ThrottlingCall.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />

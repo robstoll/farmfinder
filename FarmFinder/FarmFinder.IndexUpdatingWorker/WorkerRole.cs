@@ -7,6 +7,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using CH.Tutteli.FarmFinder.Dtos;
+using CH.Tutteli.FarmFinder.SearchApi;
 using CH.Tutteli.FarmFinder.Website.Models;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
@@ -34,6 +35,7 @@ namespace IndexUpdatingQueue
         private TopicClient _topicClient;
         private AzureDirectory _azureDirectory;
         private IndexWriter _indexWriter;
+        private readonly ThrottlingCall _throttlingCall = new ThrottlingCall(TimeSpan.FromMinutes(1));
 
         public override void Run()
         {
@@ -44,7 +46,8 @@ namespace IndexUpdatingQueue
                 {
                     var dto = receivedMessage.GetBody<UpdateIndexDto>();
                     await HandleMessage(dto);
-                    InformWebRolesAboutNewIndex();
+                    //do not need to await since it can run in background
+                    _throttlingCall.Execute(InformWebRolesAboutNewIndex);
                 }
                 catch(Exception ex)
                 {
@@ -56,9 +59,9 @@ namespace IndexUpdatingQueue
             _completedEvent.WaitOne();
         }
 
-        private void InformWebRolesAboutNewIndex()
+        private async Task InformWebRolesAboutNewIndex()
         {
-            _topicClient.Send(new BrokeredMessage(true));
+            await _topicClient.SendAsync(new BrokeredMessage(true));
         }
 
         private async Task HandleMessage(UpdateIndexDto dto)
@@ -173,8 +176,9 @@ namespace IndexUpdatingQueue
                     await CreateIndex(db);
                 }
             }
-
-            InformWebRolesAboutNewIndex();
+            
+            _throttlingCall.LastTimeExecuteWasCalled = DateTime.Now;
+            await InformWebRolesAboutNewIndex();
         }
 
         private static IQueryable<Farm> GetNewAddedQueryable(ApplicationDbContext db)
@@ -237,7 +241,7 @@ namespace IndexUpdatingQueue
             farm.IndexDateTime = DateTime.Now;
         }
 
-        private void UpdateFarmInIndex(Farm farm, IndexWriter indexWriter, ApplicationDbContext db)
+        private static void UpdateFarmInIndex(Farm farm, IndexWriter indexWriter, ApplicationDbContext db)
         {
             var doc = CreateDocumentFromFarm(farm);
             indexWriter.UpdateDocument(new Term("id", farm.FarmId.ToString()), doc);
@@ -245,7 +249,7 @@ namespace IndexUpdatingQueue
             farm.IndexDateTime = DateTime.Now;
         }
 
-        private void DeleteFarmFromIndex(Farm farm, IndexWriter indexWriter, ApplicationDbContext db)
+        private static void DeleteFarmFromIndex(Farm farm, IndexWriter indexWriter, ApplicationDbContext db)
         {
             indexWriter.DeleteDocuments(new Term("id", farm.FarmId.ToString()));
             db.Farms.Remove(farm);
@@ -269,7 +273,7 @@ namespace IndexUpdatingQueue
                         db.Farms.Remove(farm);
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     //TODO error handling. Should certainly not abort the adddition of documents
                 }
@@ -291,7 +295,7 @@ namespace IndexUpdatingQueue
             return writer;
         }
 
-        private Document CreateDocumentFromFarm(Farm farm)
+        private static Document CreateDocumentFromFarm(Farm farm)
         {
             var doc = new Document();
             doc.Add(new Field("id", farm.FarmId.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED, Field.TermVector.NO));
@@ -311,7 +315,7 @@ namespace IndexUpdatingQueue
             return doc;
         }
 
-        private void AddFieldIfNotNullOrEmpty(Document doc, string fieldName, string value, Field.Index index=Field.Index.NO)
+        private static void AddFieldIfNotNullOrEmpty(Document doc, string fieldName, string value, Field.Index index=Field.Index.NO)
         {
             if (!string.IsNullOrEmpty(value))
             {
