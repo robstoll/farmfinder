@@ -37,14 +37,24 @@
     <ServiceConfiguration Include="ServiceConfiguration.Cloud.cscfg" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="FarmFinder.IndexUpdatingWorkerContent" />
+    <Folder Include="FarmFinder.IndexUpdatingWorkerContent\" />
     <Folder Include="Profiles" />
   </ItemGroup>
   <ItemGroup>
-    <DiagnosticsConfiguration Include="FarmFinder.IndexUpdatingWorkerContent\diagnostics.wadcfgx" />
+    <PublishProfile Include="Profiles\FarmFinderProduction.azurePubxml" />
   </ItemGroup>
   <ItemGroup>
-    <PublishProfile Include="Profiles\FarmFinderProduction.azurePubxml" />
+    <ProjectReference Include="..\FarmFinder.IndexUpdatingWorker\FarmFinder.IndexUpdatingWorker.csproj">
+      <Name>FarmFinder.IndexUpdatingWorker</Name>
+      <Project>{f2588d87-7035-45eb-aba5-d051aea79124}</Project>
+      <Private>True</Private>
+      <RoleType>Worker</RoleType>
+      <RoleName>FarmFinder.IndexUpdatingWorker</RoleName>
+      <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <DiagnosticsConfiguration Include="FarmFinder.IndexUpdatingWorkerContent\diagnostics.wadcfgx" />
   </ItemGroup>
   <!-- Import the target files for this project template -->
   <PropertyGroup>

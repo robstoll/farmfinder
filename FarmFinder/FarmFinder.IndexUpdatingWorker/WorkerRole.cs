@@ -13,7 +13,6 @@ using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
-using Lucene.Net.Store;
 using Lucene.Net.Store.Azure;
 using Microsoft.ServiceBus.Messaging;
 using Microsoft.WindowsAzure;
@@ -73,7 +72,7 @@ namespace IndexUpdatingQueue
                         farm =
                             await db.Farms.Include(f => f.Products).Where(f => f.FarmId == dto.FarmId).FirstAsync();
                         //good idea but different time zone or system time on different servers do not allow to use a timestamp to filter out old messages
-                        if (farm != null) // && farm.UpdateDateTime == dto.UpdateTime) 
+                        if (farm != null && farm.UpdateDateTime > farm.IndexDateTime) // && farm.UpdateDateTime == dto.UpdateTime) 
                         {
                             AddFarmToIndex(farm, _indexWriter, db);
                             await db.SaveChangesAsync();
@@ -83,7 +82,7 @@ namespace IndexUpdatingQueue
                     case EUpdateMethod.Update:
                         farm =
                             await db.Farms.Include(f => f.Products).Where(f => f.FarmId == dto.FarmId).FirstAsync();
-                        if (farm != null) // && farm.UpdateDateTime == dto.UpdateTime)
+                        if (farm != null && farm.UpdateDateTime > farm.IndexDateTime) // && farm.UpdateDateTime == dto.UpdateTime)
                         {
                             UpdateFarmInIndex(farm, _indexWriter, db);
                             await db.SaveChangesAsync();
@@ -117,7 +116,15 @@ namespace IndexUpdatingQueue
             _azureDirectory = CreateAzureDirectory();
             _indexWriter = CreateIndexWriter();
 
-            Task.Run(async () => await InitialiseIndex()).Wait();
+            var task = Task.Run(async () => await InitialiseIndex());
+            task.Wait();
+            if (task.IsFaulted)
+            {
+                //Most probably an unexpected Error due to AzureDirectory
+                //Wait for a minute and try again 
+                Thread.Sleep(60*1000);
+                Task.Run(async () => await InitialiseIndex()).Wait();
+            }
 
             return base.OnStart();
         }

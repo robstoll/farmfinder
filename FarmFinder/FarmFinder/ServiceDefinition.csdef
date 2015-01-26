@@ -5,7 +5,5 @@
       <Setting name="ServiceBus.QueueConnectionString" />
       <Setting name="ServiceBus.TopicConnectionString" />
     </ConfigurationSettings>
-    <LocalResources>
-    </LocalResources>
   </WorkerRole>
 </ServiceDefinition>
