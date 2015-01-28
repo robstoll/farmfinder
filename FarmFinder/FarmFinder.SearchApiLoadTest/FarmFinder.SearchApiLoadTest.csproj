@@ -57,28 +57,31 @@
     <None Include="SmallLoad.loadtest">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="LocationBasedOnly50km.webtest">
+    <None Include="MiddleLoad.loadtest">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="LocationBasedOnly100km.webtest">
+    <None Include="Tests\LocationBasedOnly50km.webtest">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Tests\LocationBasedOnly100km.webtest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SearchForGurkenSellerie100km.webtest">
+    <None Include="Tests\SearchForGurkenSellerie100km.webtest">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="SearchForGurkenSellerie50km.webtest">
+    <None Include="Tests\SearchForGurkenSellerie50km.webtest">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="SearchForZwiebel50km.webtest">
+    <None Include="Tests\SearchForZwiebel50km.webtest">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="SearchForZwiebel100km.webtest">
+    <None Include="Tests\SearchForZwiebel100km.webtest">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="SearchForTomaten50km.webtest">
+    <None Include="Tests\SearchForTomaten50km.webtest">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="SearchForTomaten100km.webtest">
+    <None Include="Tests\SearchForTomaten100km.webtest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
